@@ -1,0 +1,56 @@
+export const site = {
+  name: "Automation Squad",
+  /** Apex domain is canonical; www redirects to it (see BUILD_SPEC.md §12). */
+  url: "https://team-automationsolutions.me",
+  domain: "team-automationsolutions.me",
+  email: "send@team-automationsolutions.me",
+  eyebrow: "Software House · AI Automations · Web Development",
+  title: "Automation Squad — Websites, AI Automations & Chatbots",
+  description:
+    "Automation Squad is a software house that builds websites, AI automations, chatbots, and custom web applications for growing businesses.",
+  about:
+    "Automation Squad builds websites, AI automations, chatbots, and modern web applications that save businesses time while delivering polished user experiences.",
+} as const;
+
+/** Mutable copy — Next's Metadata type does not accept a readonly array. */
+export const keywords: string[] = [
+  "software house",
+  "website development",
+  "web development agency",
+  "AI automation agency",
+  "AI automation",
+  "AI automation services",
+  "workflow automation",
+  "AI chatbots",
+  "chatbot development",
+  "AI agents",
+  "full-stack development",
+  "web application development",
+  "Next.js development",
+  "React development",
+  "custom software",
+  "business process automation",
+  "custom websites",
+  "Automation Squad",
+];
+
+const SUBJECT = "Project enquiry — Automation Squad";
+const BODY = "Hi Automation Squad,\n\nI'd like to talk about:\n";
+
+/** Opens the Gmail web composer, pre-filled. Use with target="_blank". */
+export const gmailComposeUrl =
+  "https://mail.google.com/mail/?view=cm&fs=1" +
+  `&to=${encodeURIComponent(site.email)}` +
+  `&su=${encodeURIComponent(SUBJECT)}` +
+  `&body=${encodeURIComponent(BODY)}`;
+
+/** Native mail-client fallback. */
+export const mailtoUrl = `mailto:${site.email}?subject=${encodeURIComponent(
+  SUBJECT,
+)}`;
+
+export const navLinks = [
+  { label: "Projects", href: "#projects" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
+] as const;
