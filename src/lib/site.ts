@@ -49,6 +49,16 @@ export const mailtoUrl = `mailto:${site.email}?subject=${encodeURIComponent(
   SUBJECT,
 )}`;
 
+/**
+ * Our own cold-outreach dashboard. Public, read-only, and the numbers on it are
+ * live — which is why the section on this site shows the status vocabulary and
+ * links out rather than repeating counts that would go stale within a day.
+ */
+export const leadsDashboard = {
+  url: "https://leads-website-alpha.vercel.app/",
+  host: "leads-website-alpha.vercel.app",
+} as const;
+
 export const navLinks = [
   { label: "Projects", href: "#projects" },
   { label: "About", href: "#about" },

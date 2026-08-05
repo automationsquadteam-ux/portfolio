@@ -19,6 +19,7 @@ Rounded cards. Soft borders instead of heavy shadows. Smooth, restrained motion.
 | Area | Status |
 | --- | --- |
 | §7.0 – §7.13 — all 15 site files | ✅ Built |
+| §7.14 Lead pipeline section (added 2026-08-05) | ✅ Built — lint + build re-run clean, `/` still static |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -69,7 +70,7 @@ Break any of these and the work is wrong.
 | R2 | **Dark mode only.** There is no light theme and no theme toggle. Do not write `dark:` variants. |
 | R3 | **Exactly 3 projects.** Anchor Builders, Lumber Wiz, Char Meem Clothing. No more, no fewer. |
 | R4 | **No Tech Stack section.** Tech names appear *only* as small tags inside project cards. This was explicitly cut. |
-| R5 | **No testimonials, blog, pricing, services, timeline, resume, stats counters, or logo walls.** |
+| R5 | **No testimonials, blog, pricing, services, timeline, resume, stats counters, or logo walls.** The one approved addition is the **Lead pipeline** section (§7.14, added 2026-08-05 at the owner's request) — it links out to the live outreach dashboard. Do not delete it, and do not let it grow into a stats-counter block. |
 | R6 | **No emoji anywhere.** Icons come from `lucide-react` only. |
 | R7 | **Use the design tokens in §3.** Never hard-code a hex value inside a component. |
 | R8 | **Every animation must respect `prefers-reduced-motion`.** Use `useReducedMotion()` from `motion/react`. |
@@ -131,6 +132,7 @@ portfolio/
 │   │   ├── sections/
 │   │   │   ├── hero.tsx            §7.10 client — staggered entrance
 │   │   │   ├── projects.tsx        §7.10 client — stagger container
+│   │   │   ├── pipeline.tsx        §7.14 server — lead dashboard link-out
 │   │   │   ├── about.tsx           §7.10 server
 │   │   │   └── contact.tsx         §7.10 server
 │   │   └── ui/
@@ -330,6 +332,17 @@ Order, top to bottom. Nothing else.
 │   │ Next.js · TS · …      │  │ React · AI · …        │               │
 │   │ View Project →        │  │ View Project →        │               │
 │   └───────────────────────┘  └───────────────────────┘               │
+├──────────────────────────────────────────────────────────────────────┤ id="pipeline"
+│   LIVE DASHBOARD          │  ┌────────────────────────────────────┐  │
+│                           │  │ leads-website-alpha.vercel.app ● LIVE│ │
+│   Our lead engine,        │  ├────────────────────────────────────┤  │
+│   in the open.            │  │ 01  Researching · enriched, verified│ │
+│                           │  │ 02  Ready       · drafted, queued   │ │
+│   We run our own outreach │  │ 03  Approved    · cleared to send   │ │
+│   on a pipeline we built… │  │ 04  Sent        · follow-ups queued │ │
+│                           │  │ 05  Replied     · handed to a person│ │
+│   ( View the dashboard ↗ )│  └────────────────────────────────────┘  │
+│        (5 cols)           │            (7 cols)                      │
 ├──────────────────────────────────────────────────────────────────────┤ id="about"
 │   ABOUT   │  We are a company focused on building AI automations,    │
 │  (3 cols) │  intelligent chatbots, and modern web applications…      │
@@ -415,6 +428,38 @@ them so they still read 01 → 02 → 03 down the page.
 
 - Card link label: `View Project` (+ `ArrowUpRight` icon)
 - All project links: `target="_blank" rel="noopener noreferrer"`
+
+### Lead pipeline (added 2026-08-05)
+
+- Eyebrow: `LIVE DASHBOARD`
+- H2: `Our lead engine, in the open.`
+- Paragraph: `We run our own outreach on a pipeline we built. Every lead moves through the statuses below, and the dashboard reads straight from it — no screenshots, no edited numbers.`
+- Primary button: `View the dashboard` (+ `ArrowUpRight`) → `https://leads-website-alpha.vercel.app/`, new tab
+- Card header: the bare host `leads-website-alpha.vercel.app`, and a `LIVE` pill with an accent dot
+- Card footer: `Counts update on the dashboard. Lead identities and contact details are never published.`
+
+Statuses — the vocabulary is copied from the live dashboard so a visitor who clicks
+through sees the same words. If the dashboard renames a status, rename it here too.
+
+| # | Status | Detail |
+| --- | --- | --- |
+| `01` | `Researching` | `Company enriched, contact found, address verified.` |
+| `02` | `Ready` | `Email drafted by the agent, queued for a human read.` |
+| `03` | `Approved` | `Signed off and cleared to send.` |
+| `04` | `Sent` | `Initial email out, follow-ups scheduled behind it.` |
+| `05` | `Replied` | `Pulled out of the sequence and handed to a person.` |
+
+> **Why there are no counts here.** The dashboard's numbers (leads tracked, emails sent,
+> reply rate) move hourly, and this page is statically prerendered — any figure baked in
+> would be wrong within a day and would contradict the live page it links to. The section
+> shows the *shape* of the pipeline and sends people to the dashboard for the numbers.
+> The leads app exposes no public JSON endpoint (`/api/*` all 307-redirect to auth), so
+> there is nothing to fetch. If one is ever added, wire it up with
+> `fetch(url, { next: { revalidate: 3600 } })` and a fallback to the static list —
+> do not scrape the dashboard's HTML.
+>
+> No lead names, companies or addresses appear on this site. The dashboard makes the same
+> promise; breaking it here would break it there.
 
 ### About
 - Label: `ABOUT`
@@ -1431,18 +1476,22 @@ Stays a **server component** — it only composes.
 ```tsx
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { StructuredData } from "@/components/structured-data";
 import { Hero } from "@/components/sections/hero";
 import { Projects } from "@/components/sections/projects";
+import { Pipeline } from "@/components/sections/pipeline";
 import { About } from "@/components/sections/about";
 import { Contact } from "@/components/sections/contact";
 
 export default function Home() {
   return (
     <>
+      <StructuredData />
       <SiteHeader />
       <main>
         <Hero />
         <Projects />
+        <Pipeline />
         <About />
         <Contact />
       </main>
@@ -1451,6 +1500,140 @@ export default function Home() {
   );
 }
 ```
+
+### 7.14 — `src/components/sections/pipeline.tsx` (added 2026-08-05)  ✅ DONE
+
+A **server** component — the only motion is the shared `Reveal` primitive and one CSS
+`animate-pulse` dot, so nothing here needs `"use client"`. Copy is in §5.
+
+The URL lives in `src/lib/site.ts` alongside every other outbound link:
+
+```ts
+/**
+ * Our own cold-outreach dashboard. Public, read-only, and the numbers on it are
+ * live — which is why the section on this site shows the status vocabulary and
+ * links out rather than repeating counts that would go stale within a day.
+ */
+export const leadsDashboard = {
+  url: "https://leads-website-alpha.vercel.app/",
+  host: "leads-website-alpha.vercel.app",
+} as const;
+```
+
+```tsx
+import { ArrowUpRight } from "lucide-react";
+import { Reveal } from "@/components/ui/reveal";
+import { buttonClass } from "@/components/ui/button";
+import { leadsDashboard } from "@/lib/site";
+
+/**
+ * The status vocabulary is the one the live dashboard uses, so a visitor who
+ * clicks through sees the same words. Counts are deliberately *not* mirrored
+ * here — they change hourly and this page is statically prerendered.
+ */
+const stages = [
+  { index: "01", name: "Researching", detail: "Company enriched, contact found, address verified." },
+  { index: "02", name: "Ready",       detail: "Email drafted by the agent, queued for a human read." },
+  { index: "03", name: "Approved",    detail: "Signed off and cleared to send." },
+  { index: "04", name: "Sent",        detail: "Initial email out, follow-ups scheduled behind it." },
+  { index: "05", name: "Replied",     detail: "Pulled out of the sequence and handed to a person." },
+] as const;
+
+export function Pipeline() {
+  return (
+    <section
+      id="pipeline"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 border-t border-line px-6 py-24 md:px-8 md:py-32 lg:px-10"
+    >
+      <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-6">
+        {/* ── Left: the pitch ──────────────────────────────────────────── */}
+        <Reveal className="md:col-span-5">
+          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
+            Live Dashboard
+          </span>
+
+          <h2 className="mt-6 max-w-[16ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:text-5xl">
+            Our lead engine, in the open.
+          </h2>
+
+          <p className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-muted md:text-base">
+            We run our own outreach on a pipeline we built. Every lead moves
+            through the statuses below, and the dashboard reads straight from
+            it — no screenshots, no edited numbers.
+          </p>
+
+          <a
+            href={leadsDashboard.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonClass("primary", "mt-10")}
+          >
+            View the dashboard
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+            <span className="sr-only">— opens in a new tab</span>
+          </a>
+        </Reveal>
+
+        {/* ── Right: the status list ───────────────────────────────────── */}
+        <Reveal delay={0.08} className="md:col-span-7">
+          <div className="rounded-3xl border border-line bg-surface p-2">
+            <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+              <span className="truncate font-mono text-[11px] tracking-[0.04em] text-subtle">
+                {leadsDashboard.host}
+              </span>
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-background px-2.5 py-1 font-mono text-[10px] font-medium tracking-[0.14em] text-subtle uppercase">
+                <span
+                  aria-hidden="true"
+                  className="size-1.5 animate-pulse rounded-full bg-accent"
+                />
+                Live
+              </span>
+            </div>
+
+            <ul className="rounded-2xl border border-line bg-background p-1.5">
+              {stages.map((stage) => (
+                <li
+                  key={stage.index}
+                  className="flex items-baseline gap-4 rounded-xl px-3 py-3.5 transition-colors duration-200 hover:bg-surface md:px-4"
+                >
+                  <span className="font-mono text-[11px] tracking-[0.04em] text-subtle">
+                    {stage.index}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[15px] font-medium text-foreground">
+                      {stage.name}
+                    </p>
+                    <p className="mt-1 text-[15px] leading-relaxed text-muted">
+                      {stage.detail}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <p className="px-3 pt-3 pb-2 text-[15px] leading-relaxed text-muted">
+              Counts update on the dashboard. Lead identities and contact
+              details are never published.
+            </p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+```
+
+Notes for whoever edits this next:
+
+- **Not in the header nav.** §9's mobile-nav reasoning still holds — four anchors do not
+  justify a hamburger, and the section sits directly under Projects where people scroll
+  into it. If you do add it, add it to `navLinks` in `src/lib/site.ts`, not to the header.
+- **Rhythm is one step tighter** than the other sections (`py-24 md:py-32`, no `lg:py-40`).
+  It is a link-out, not a headline act.
+- **Accent budget (§3.1):** this section spends it on the eyebrow, the primary button and
+  the `LIVE` dot. Nothing else in here may be blue.
+- The pulse dot animates `opacity` only (R9) and the global reduced-motion block in §7.1
+  freezes it (R8).
 
 ---
 
@@ -1494,6 +1677,7 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | Project grid | 1 column | 2 columns | 2 columns |
 | Card 1 (Char Meem, `wide`) | full width | spans both columns | spans both columns |
 | Card image ratio | 16:10 (16:7 for card 3) | same | same |
+| Lead pipeline | stacked, copy above the status card | 5 / 7 column split | 5 / 7 column split |
 | About | stacked, label above text | 3 / 9 column split | 3 / 9 column split |
 | Section rhythm | `py-24` | `py-32` | `py-40` |
 | Contact panel padding | `px-8 py-14` | `px-14 py-20` | `px-20 py-24` |
@@ -1526,7 +1710,7 @@ Also required: no horizontal scroll at 320px · nothing hidden behind the fixed 
 - [x] Correct `sizes` on every `fill` image (already in §7.8) — wrong `sizes` = oversized downloads.
 - [x] Image containers have a fixed `aspect-[…]` so nothing shifts while loading (CLS < 0.1).
 - [x] Fonts via `next/font/google` with `display: "swap"` — no `<link>` to Google Fonts, no FOIT.
-- [x] `"use client"` only on `site-header`, `hero`, `projects`, `project-card`, `reveal`, `copy-email-button`. `layout`, `page`, `about`, `contact`, `site-footer`, `button` stay server components.
+- [x] `"use client"` only on `site-header`, `hero`, `projects`, `project-card`, `reveal`, `copy-email-button`. `layout`, `page`, `pipeline`, `about`, `contact`, `site-footer`, `button` stay server components.
 - [x] Only `opacity` / `transform` animated.
 - [x] No external scripts, no analytics, no icon-font, no CSS-in-JS runtime.
 - [x] Images served through `next/image` — *optimiser returns HTTP 200 for all three*
@@ -1550,7 +1734,8 @@ npm run dev      # then open http://localhost:3000
 - [x] `npm run lint` — zero problems.
 - [x] `npm run build` — zero errors, zero warnings. `/` prerenders as static.
 - [x] Production server serves `/` with HTTP 200.
-- [x] All four section anchors present in the HTML: `#top`, `#projects`, `#about`, `#contact`.
+- [x] All five section anchors present in the HTML: `#top`, `#projects`, `#pipeline`, `#about`, `#contact`.
+- [x] Lead pipeline section prerenders statically: heading, all five statuses and the dashboard URL are in the served HTML, and `/` is still `○ (Static)`.
 - [x] All three project titles, categories, descriptions and tag sets render.
 - [x] All three outbound URLs present (`anchor-builders.vercel.app`, `lumberwiz-2-0.vercel.app`, `khudclothes.com`).
 - [x] Gmail compose URL and `mailto:` fallback both present.
@@ -1584,6 +1769,7 @@ These need a real browser. Nothing below has been verified.
 - [ ] `View Projects` → projects section. `Contact Me` → contact section.
 - [ ] Hovering a card: lifts ~6px, border lightens, image zooms slightly, arrow nudges.
 - [ ] `View Project` opens the correct site in a **new tab** (check all three URLs).
+- [ ] `View the dashboard` opens `https://leads-website-alpha.vercel.app/` in a **new tab**, and the statuses on that page still read Researching / Ready / Approved / Sent / Replied.
 - [ ] `Email` opens Gmail compose with To, Subject and Body pre-filled.
 - [ ] `Copy email` copies the address and shows `Copied` for 2 seconds.
 - [ ] The `send@team-automationsolutions.me` text link opens the default mail client.
