@@ -28,7 +28,7 @@ export const projects: Project[] = [
     description:
       "A modern business website built for a clothing manufacturing company with a clean UI, responsive design, and optimized performance.",
     tags: ["Next.js", "Tailwind CSS", "Supabase"],
-    href: "https://www.khudclothes.com/",
+    href: "https://khud-clothing-eight.vercel.app",
     image: "/projects/charmeem.png",
     imageAlt: "Char Meem storefront hero reading Wear Your Imprint",
     wide: true,
