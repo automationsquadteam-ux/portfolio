@@ -61,6 +61,7 @@ export const leadsDashboard = {
 
 export const navLinks = [
   { label: "Projects", href: "#projects" },
+  { label: "Pricing", href: "#pricing" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ] as const;

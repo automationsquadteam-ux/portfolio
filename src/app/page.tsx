@@ -4,6 +4,7 @@ import { StructuredData } from "@/components/structured-data";
 import { Hero } from "@/components/sections/hero";
 import { Projects } from "@/components/sections/projects";
 import { Pipeline } from "@/components/sections/pipeline";
+import { Pricing } from "@/components/sections/pricing";
 import { About } from "@/components/sections/about";
 import { Contact } from "@/components/sections/contact";
 
@@ -16,6 +17,7 @@ export default function Home() {
         <Hero />
         <Projects />
         <Pipeline />
+        <Pricing />
         <About />
         <Contact />
       </main>

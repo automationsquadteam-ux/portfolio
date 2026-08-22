@@ -20,6 +20,7 @@ Rounded cards. Soft borders instead of heavy shadows. Smooth, restrained motion.
 | --- | --- |
 | §7.0 – §7.13 — all 15 site files | ✅ Built |
 | §7.14 Lead pipeline section (added 2026-08-05) | ✅ Built — lint + build re-run clean, `/` still static |
+| §7.15 Pricing section + rate-card PDF download (added 2026-08-22) | ✅ Built — lint + build re-run clean, `/` still static, PDF serves `200 application/pdf` |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -70,7 +71,7 @@ Break any of these and the work is wrong.
 | R2 | **Dark mode only.** There is no light theme and no theme toggle. Do not write `dark:` variants. |
 | R3 | **Exactly 3 projects.** Anchor Builders, Lumber Wiz, Char Meem Clothing. No more, no fewer. |
 | R4 | **No Tech Stack section.** Tech names appear *only* as small tags inside project cards. This was explicitly cut. |
-| R5 | **No testimonials, blog, pricing, services, timeline, resume, stats counters, or logo walls.** The one approved addition is the **Lead pipeline** section (§7.14, added 2026-08-05 at the owner's request) — it links out to the live outreach dashboard. Do not delete it, and do not let it grow into a stats-counter block. |
+| R5 | **No testimonials, blog, timeline, resume, stats counters, or logo walls.** Two approved additions to this list: the **Lead pipeline** section (§7.14, added 2026-08-05) links out to the live outreach dashboard, and the **Pricing** section (§7.15, added 2026-08-22) mirrors the official rate-card PDF. Do not delete either, and do not let the pipeline section grow into a stats-counter block. |
 | R6 | **No emoji anywhere.** Icons come from `lucide-react` only. |
 | R7 | **Use the design tokens in §3.** Never hard-code a hex value inside a component. |
 | R8 | **Every animation must respect `prefers-reduced-motion`.** Use `useReducedMotion()` from `motion/react`. |
@@ -111,7 +112,8 @@ portfolio/
 │   ├── logo-mark.png               §6.2 transparent gear mark (header chip, OG card)
 │   ├── logo-lockup.png             §6.2 transparent full lockup (JSON-LD logo)
 │   ├── icon-192.png                §6.2 PWA icon
-│   └── icon-512.png                §6.2 PWA icon
+│   ├── icon-512.png                §6.2 PWA icon
+│   └── Automation_Squad_Rate_Card.pdf  §6.4 the rate-card PDF, downloadable from §7.16
 ├── src/
 │   ├── app/
 │   │   ├── favicon.ico             §6.2 multi-res 16/32/48/64, branded
@@ -133,6 +135,7 @@ portfolio/
 │   │   │   ├── hero.tsx            §7.10 client — staggered entrance
 │   │   │   ├── projects.tsx        §7.10 client — stagger container
 │   │   │   ├── pipeline.tsx        §7.14 server — lead dashboard link-out
+│   │   │   ├── pricing.tsx         §7.15 server — services, bundles, add-ons
 │   │   │   ├── about.tsx           §7.10 server
 │   │   │   └── contact.tsx         §7.10 server
 │   │   └── ui/
@@ -143,7 +146,8 @@ portfolio/
 │   └── lib/
 │       ├── site.ts                 §7.3  name, email, Gmail/mailto URLs, nav links
 │       ├── projects.ts             §7.4  the three projects
-│       └── motion.ts               §7.5  EASE, DURATION, variants
+│       ├── motion.ts               §7.5  EASE, DURATION, variants
+│       └── pricing.ts              §7.15 services, bundles, add-ons — mirrors the PDF
 ├── AGENTS.md                       points here
 ├── BUILD_SPEC.md                   <- you are here
 ├── eslint.config.mjs
@@ -300,7 +304,7 @@ Order, top to bottom. Nothing else.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  [sticky header]  AUTOMATION SQUAD   Projects About Contact  (Let's talk)│
+│  [sticky header]  AUTOMATION SQUAD  Projects Pricing About Contact (Let's talk)│
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │   AI AUTOMATION · FULL-STACK DEVELOPMENT          <- accent, mono     │
@@ -343,6 +347,30 @@ Order, top to bottom. Nothing else.
 │                           │  │ 05  Replied     · handed to a person│ │
 │   ( View the dashboard ↗ )│  └────────────────────────────────────┘  │
 │        (5 cols)           │            (7 cols)                      │
+├──────────────────────────────────────────────────────────────────────┤ id="pricing"
+│   PRICING                           ( ⬇ Download rate card )         │
+│   Every service, priced up front.                                    │
+│   We build the systems small businesses actually need…               │
+│   Updated August 2026                                                │
+│                                                                      │
+│   CORE SERVICES — Pick what you need                                 │
+│   ┌───────────┐ ┌───────────┐ ┌───────────┐                         │
+│   │ Website   │ │ Assistant │ │ Voice     │  (3-up grid, 6 cards)   │
+│   │ $250/$20  │ │ $275/$50  │ │ $475/$85+ │                         │
+│   └───────────┘ └───────────┘ └───────────┘   …3 more                │
+│                                                                      │
+│   BUNDLES — Combine services and save                                │
+│   ┌────────────────────────┐ ┌────────────────────────┐             │
+│   │ Foundation   $250/$20  │ │ Growth   $450/$60       │  (2-up)    │
+│   ├────────────────────────┤ ├────────────────────────┤             │
+│   │ Sales Automation       │ │ Full System             │             │
+│   │ $1,050/$120  Save $225 │ │ $1,950/$280+ Save $450  │             │
+│   └────────────────────────┘ └────────────────────────┘             │
+│                                                                      │
+│   ADD-ONS               │  HOW WE WORK                               │
+│   Extra language +$75   │  Getting started                           │
+│   CRM connection +$100  │  Every project starts with a short call…   │
+│   Anything else — call  │                                            │
 ├──────────────────────────────────────────────────────────────────────┤ id="about"
 │   ABOUT   │  We are a company focused on building AI automations,    │
 │  (3 cols) │  intelligent chatbots, and modern web applications…      │
@@ -461,6 +489,54 @@ through sees the same words. If the dashboard renames a status, rename it here t
 > No lead names, companies or addresses appear on this site. The dashboard makes the same
 > promise; breaking it here would break it there.
 
+### Pricing (added 2026-08-22)
+
+Source of truth: `public/Automation_Squad_Rate_Card.pdf` ("Updated August 2026"). Every
+number and description below is transcribed from that PDF verbatim — do not paraphrase the
+descriptions or round the figures. If the rate card changes, update the PDF, `src/lib/pricing.ts`
+and this table together; they must never disagree.
+
+- Eyebrow: `PRICING`
+- H2: `Every service, priced up front.`
+- Intro paragraph (verbatim from the PDF): `We build the systems small businesses actually need to stop losing customers to slow replies: websites, chatbots, voice receptionists, and the automation connecting them. Every service has two costs, a one-time setup fee for the build, and a small monthly fee for hosting, API usage, and upkeep. Combine services into a bundle and the monthly fee drops.`
+- Meta line: `Updated August 2026`
+- Download button: `Download rate card` (+ `Download` icon) → downloads `public/Automation_Squad_Rate_Card.pdf` as `Automation-Squad-Rate-Card.pdf` (uses the HTML `download` attribute, **not** `target="_blank"` — it saves a file, it does not navigate)
+
+**Core services** — eyebrow `CORE SERVICES`, H3 `Pick what you need`. Six cards, in this order:
+
+| Service | Description | Setup | Monthly |
+| --- | --- | --- | --- |
+| `Business Website` | `A responsive website built to convert visitors into contacts: a booking or quote form, WhatsApp button, Google Maps, and basic SEO included.` | `$250` | `$20` |
+| `AI Customer Assistant` | `A chatbot trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.` | `$275` | `$50` |
+| `AI Voice Receptionist` | `Answers your business line day and night, understands what the caller wants, and books the appointment directly into your calendar.` | `$475` | `$85` `+usage` |
+| `Lead Generation System` | `Finds businesses matching your ideal customer, pulls their contact details, and loads them into a dashboard ranked by fit.` | `$650` | `$80` |
+| `Automated Lead Follow-Up` | `Every new lead gets an instant reply, then a scheduled follow-up sequence over the next two weeks until they respond.` | `$375` | `$45` |
+| `Review & Reputation System` | `Happy customers are sent to leave a public review. Unhappy ones are routed to a private form first, so you can fix it before it becomes one.` | `$375` | `$40` |
+
+**Bundles** — eyebrow `BUNDLES`, H3 `Combine services and save`, subhead `Each bundle below costs less than buying the same services separately.` Four cards, each showing its included services as pill tags:
+
+| Bundle | Description | Includes | Setup | Monthly | Savings note |
+| --- | --- | --- | --- | --- | --- |
+| `Foundation` | `For businesses that just need a professional site and a way for people to reach them.` | Business Website | `$250` | `$20` | *(none — single service)* |
+| `Growth` | `Turns the website into something that works while you're not looking: answering questions and capturing leads on its own.` | Business Website, AI Customer Assistant | `$450` | `$60` | `Save $75 on setup and $10 a month versus buying separately.` |
+| `Sales Automation` | `Brings in new customers and makes sure none of them go cold waiting for a reply.` | Business Website, Lead Generation System, Automated Lead Follow-Up | `$1,050` | `$120` | `Save $225 on setup and $25 a month versus buying separately.` |
+| `Full System` | `Every service running together: website, chatbot, voice receptionist, lead generation, follow-up, and reputation management.` | all six core services | `$1,950` | `$280` `+usage` | `Save $450 on setup and $40 a month versus buying separately.` |
+
+**Add-ons** — eyebrow `ADD-ONS`, H3 `Extend any service`. A three-row list:
+
+| Add-on | Price |
+| --- | --- |
+| `Extra language for the chatbot or voice assistant` | `+$75 setup, +$10/mo` |
+| `Connecting to a CRM or spreadsheet you already use` | `+$100 setup` |
+| `Anything outside the services above` | `Quoted after a short call` |
+
+**How we work** — eyebrow `HOW WE WORK`, H3 `Getting started`, paragraph (verbatim from the PDF): `Every project starts with a short call about what you actually need. Scope and the setup fee are confirmed before any work begins, so there are no surprises on the invoice. Single-service builds are typically live within one to two weeks; bundles take two to four depending on scope.`
+
+> **Why no orange.** The PDF uses the brand orange as an accent (section labels, bundle
+> top-bars, savings text). This site does not — §6.2 already rejected orange as a site
+> accent (fails contrast, pushes off the Linear/Vercel register), and that ruling holds
+> here. Savings lines render in plain `text-foreground`, not a new colour.
+
 ### About
 - Label: `ABOUT`
 - Paragraph: `We are a company focused on building AI automations, intelligent chatbots, and modern web applications. We create software that saves businesses time through automation while delivering polished user experiences.`
@@ -574,6 +650,20 @@ your favicons silently stop working. Same for `openGraph.images` — `opengraph-
 The OG card design: dark `#0A0A0A` ground, faint blue radial glow, white logo chip + wordmark
 top-left, blue eyebrow, 76px headline, and a hairline footer with the domain and email. It is
 prerendered at build time — no runtime cost, no edge function.
+
+### 6.4 Rate-card PDF (added 2026-08-22)
+
+`public/Automation_Squad_Rate_Card.pdf` — the owner's own three-page pricing PDF, served as a
+static file and offered as a download from the Pricing section (§7.15). It is also the source
+of truth for every figure in `src/lib/pricing.ts` (see §5's Pricing copy block).
+
+- Served at `/Automation_Squad_Rate_Card.pdf`, `Content-Type: application/pdf`, no build step.
+- Linked with the HTML `download` attribute (filename `Automation-Squad-Rate-Card.pdf`), not
+  `target="_blank"` — this is a same-origin file save, not an outbound link, so it does not get
+  the `rel="noopener noreferrer"` / "opens in a new tab" treatment used for external links.
+- If the rate card is ever revised: replace this file (same filename, no code change needed)
+  **and** update `src/lib/pricing.ts` and the Pricing copy table in §5 to match. They must
+  never disagree — the page claims the numbers come from this PDF.
 
 ---
 
@@ -1635,6 +1725,103 @@ Notes for whoever edits this next:
 - The pulse dot animates `opacity` only (R9) and the global reduced-motion block in §7.1
   freezes it (R8).
 
+### 7.15 — Pricing (added 2026-08-22)  ✅ DONE
+
+Two new files, both **server** components / plain data — no client JS beyond the shared
+`Reveal` primitive. Copy is in §5, the PDF asset is §6.4.
+
+`src/lib/pricing.ts` — six core services, four bundles, three add-ons, the intro/how-we-work
+paragraphs and the rate-card path, transcribed verbatim from
+`public/Automation_Squad_Rate_Card.pdf`. Full listing:
+
+```ts
+export type CoreService = {
+  id: string;
+  name: string;
+  description: string;
+  setup: number;
+  monthly: number;
+  /** e.g. "+usage" appended after the monthly figure */
+  monthlyNote?: string;
+};
+
+export const coreServices: CoreService[] = [
+  { id: "website", name: "Business Website", setup: 250, monthly: 20, description: "…" },
+  { id: "assistant", name: "AI Customer Assistant", setup: 275, monthly: 50, description: "…" },
+  { id: "voice", name: "AI Voice Receptionist", setup: 475, monthly: 85, monthlyNote: "+usage", description: "…" },
+  { id: "leadgen", name: "Lead Generation System", setup: 650, monthly: 80, description: "…" },
+  { id: "followup", name: "Automated Lead Follow-Up", setup: 375, monthly: 45, description: "…" },
+  { id: "reputation", name: "Review & Reputation System", setup: 375, monthly: 40, description: "…" },
+];
+
+export type Bundle = {
+  id: string;
+  name: string;
+  description: string;
+  /** must match a CoreService.name above */
+  includes: string[];
+  setup: number;
+  monthly: number;
+  monthlyNote?: string;
+  /** omitted for Foundation — it's a single service, so there is nothing to save */
+  savings?: string;
+};
+
+export const bundles: Bundle[] = [
+  { id: "foundation", name: "Foundation", includes: ["Business Website"], setup: 250, monthly: 20, description: "…" },
+  { id: "growth", name: "Growth", includes: ["Business Website", "AI Customer Assistant"], setup: 450, monthly: 60, savings: "Save $75 on setup and $10 a month versus buying separately.", description: "…" },
+  { id: "sales-automation", name: "Sales Automation", includes: ["Business Website", "Lead Generation System", "Automated Lead Follow-Up"], setup: 1050, monthly: 120, savings: "Save $225 on setup and $25 a month versus buying separately.", description: "…" },
+  { id: "full-system", name: "Full System", includes: ["Business Website", "AI Customer Assistant", "AI Voice Receptionist", "Lead Generation System", "Automated Lead Follow-Up", "Review & Reputation System"], setup: 1950, monthly: 280, monthlyNote: "+usage", savings: "Save $450 on setup and $40 a month versus buying separately.", description: "…" },
+];
+
+export type AddOn = { id: string; name: string; price: string };
+
+export const addOns: AddOn[] = [
+  { id: "language", name: "Extra language for the chatbot or voice assistant", price: "+$75 setup, +$10/mo" },
+  { id: "crm", name: "Connecting to a CRM or spreadsheet you already use", price: "+$100 setup" },
+  { id: "custom", name: "Anything outside the services above", price: "Quoted after a short call" },
+];
+
+export const pricingUpdated = "August 2026";
+export const pricingIntro = "…"; // verbatim, see §5
+export const pricingHowWeWork = "…"; // verbatim, see §5
+
+export const ratecard = {
+  href: "/Automation_Squad_Rate_Card.pdf",
+  downloadName: "Automation-Squad-Rate-Card.pdf",
+} as const;
+
+export function formatUSD(amount: number): string {
+  return `$${amount.toLocaleString("en-US")}`;
+}
+```
+
+(Full description strings are omitted above for length — copy them verbatim from §5 or from
+`src/lib/pricing.ts` on disk.)
+
+`src/components/sections/pricing.tsx` — renders, in order: header (eyebrow, H2, intro, the
+`Download rate card` button, the `Updated August 2026` meta line) → Core Services grid (3-up on
+`lg`, 2-up on `sm`, 1-up below) → Bundles grid (2-up on `lg`) → a 5/7 split of Add-ons (a
+bordered list, same visual language as the Pipeline status list) and How We Work. A shared
+`PriceStats` sub-component renders the Setup / Monthly two-column stat block used on both
+service and bundle cards, so the two numbers are laid out identically everywhere they appear.
+
+Notes for whoever edits this next:
+
+- **In the header nav**, unlike Pipeline. `navLinks` in `src/lib/site.ts` is now
+  `Projects · Pricing · About · Contact` — pricing is a primary reason someone clicks through,
+  so it earns the nav slot that Pipeline deliberately didn't get.
+- **Accent budget (§3.1):** spent on the eyebrow only. Bundle savings lines are
+  `text-foreground`, not accent — see the "why no orange" note in §5's Pricing block for why
+  they aren't colour-coded at all.
+- **The PDF download is not an external link.** It uses the `download` attribute (same-origin
+  file save), so it does not get `target="_blank"` / `rel="noopener noreferrer"` / the sr-only
+  "opens in a new tab" hint that every `href` to another domain gets elsewhere on this page —
+  those would be wrong here since nothing navigates.
+- **Numbers come from `toLocaleString("en-US")`**, not hand-formatted strings, so `$1,050` /
+  `$1,950` get their comma automatically and there's one function (`formatUSD`) to fix if the
+  currency ever changes.
+
 ---
 
 ## 8. MOTION SPEC
@@ -1678,12 +1865,14 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | Card 1 (Char Meem, `wide`) | full width | spans both columns | spans both columns |
 | Card image ratio | 16:10 (16:7 for card 3) | same | same |
 | Lead pipeline | stacked, copy above the status card | 5 / 7 column split | 5 / 7 column split |
+| Pricing — service/bundle grids | 1 column | 2 columns | 3 columns (services) / 2 (bundles) |
+| Pricing — add-ons / how we work | stacked, add-ons above | 5 / 7 column split | 5 / 7 column split |
 | About | stacked, label above text | 3 / 9 column split | 3 / 9 column split |
 | Section rhythm | `py-24` | `py-32` | `py-40` |
 | Contact panel padding | `px-8 py-14` | `px-14 py-20` | `px-20 py-24` |
 | Footer | stacked rows | one row | one row |
 
-**Mobile navigation decision (deliberate):** with only three anchors on a single page, a
+**Mobile navigation decision (deliberate):** with only four anchors on a single page, a
 hamburger drawer is more chrome than value. On mobile the header shows the wordmark plus the
 `Let's talk` pill; everything else is reached by scrolling. Do **not** add a hamburger menu.
 
@@ -1699,7 +1888,7 @@ Also required: no horizontal scroll at 320px · nothing hidden behind the fixed 
 - [x] `<nav aria-label="Primary">` on the header nav.
 - [x] Every `<Image>` has a descriptive `alt` (already in `projects.ts`).
 - [x] Decorative elements get `aria-hidden="true"` (the hero glow, all icons).
-- [x] Every external link: `target="_blank" rel="noopener noreferrer"` **and** an sr-only "opens in a new tab" hint.
+- [x] Every external link: `target="_blank" rel="noopener noreferrer"` **and** an sr-only "opens in a new tab" hint. — *the Pricing PDF download is same-origin and uses `download` instead; it intentionally does not get this treatment, see §6.4.*
 - [x] Focus ring visible on every interactive element (global `:focus-visible` rule in §7.1). Never `outline: none`.
 - [x] Tab order matches visual order. — *DOM order matches visual order; no `tabindex` overrides anywhere*
 - [x] Copy-email result announced via `aria-live="polite"`.
@@ -1710,7 +1899,7 @@ Also required: no horizontal scroll at 320px · nothing hidden behind the fixed 
 - [x] Correct `sizes` on every `fill` image (already in §7.8) — wrong `sizes` = oversized downloads.
 - [x] Image containers have a fixed `aspect-[…]` so nothing shifts while loading (CLS < 0.1).
 - [x] Fonts via `next/font/google` with `display: "swap"` — no `<link>` to Google Fonts, no FOIT.
-- [x] `"use client"` only on `site-header`, `hero`, `projects`, `project-card`, `reveal`, `copy-email-button`. `layout`, `page`, `pipeline`, `about`, `contact`, `site-footer`, `button` stay server components.
+- [x] `"use client"` only on `site-header`, `hero`, `projects`, `project-card`, `reveal`, `copy-email-button`. `layout`, `page`, `pipeline`, `pricing`, `about`, `contact`, `site-footer`, `button` stay server components.
 - [x] Only `opacity` / `transform` animated.
 - [x] No external scripts, no analytics, no icon-font, no CSS-in-JS runtime.
 - [x] Images served through `next/image` — *optimiser returns HTTP 200 for all three*
@@ -1734,13 +1923,15 @@ npm run dev      # then open http://localhost:3000
 - [x] `npm run lint` — zero problems.
 - [x] `npm run build` — zero errors, zero warnings. `/` prerenders as static.
 - [x] Production server serves `/` with HTTP 200.
-- [x] All five section anchors present in the HTML: `#top`, `#projects`, `#pipeline`, `#about`, `#contact`.
+- [x] All six section anchors present in the HTML: `#top`, `#projects`, `#pipeline`, `#pricing`, `#about`, `#contact`.
 - [x] Lead pipeline section prerenders statically: heading, all five statuses and the dashboard URL are in the served HTML, and `/` is still `○ (Static)`.
+- [x] Pricing section prerenders statically: heading, all six core services, all four bundles, all three add-ons and the `Download rate card` link are in the served HTML, and `/` is still `○ (Static)`.
+- [x] `/Automation_Squad_Rate_Card.pdf` serves `200 application/pdf`.
 - [x] All three project titles, categories, descriptions and tag sets render.
 - [x] All three outbound URLs present (`anchor-builders.vercel.app`, `lumberwiz-2-0.vercel.app`, `khudclothes.com`).
 - [x] Gmail compose URL and `mailto:` fallback both present.
 - [x] All three `/_next/image` requests return HTTP 200.
-- [x] No Tech Stack / testimonial / pricing markup anywhere in the output.
+- [x] No Tech Stack / testimonial / blog / logo-wall markup anywhere in the output. — *Pricing and Lead pipeline are the two approved exceptions to R5, see §0.*
 
 **Metadata & brand (§6.2 / §6.3)**
 - [x] All 13 routes/assets serve 200 with the right content-type: `/`, `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, `/opengraph-image`, `/twitter-image`, `/icon.png`, `/apple-icon.png`, `/favicon.ico`, `/logo-mark.png`, `/logo-lockup.png`, `/icon-192.png`, `/icon-512.png`.
@@ -1765,11 +1956,12 @@ These need a real browser. Nothing below has been verified.
 
 **Interaction**
 - [ ] Header is transparent at the top and turns frosted + hairline-bordered after ~24px of scroll.
-- [ ] `Projects` / `About` / `Contact` / `Let's talk` all scroll smoothly to the right section, and the heading is **not** hidden under the header.
+- [ ] `Projects` / `Pricing` / `About` / `Contact` / `Let's talk` all scroll smoothly to the right section, and the heading is **not** hidden under the header.
 - [ ] `View Projects` → projects section. `Contact Me` → contact section.
 - [ ] Hovering a card: lifts ~6px, border lightens, image zooms slightly, arrow nudges.
 - [ ] `View Project` opens the correct site in a **new tab** (check all three URLs).
 - [ ] `View the dashboard` opens `https://leads-website-alpha.vercel.app/` in a **new tab**, and the statuses on that page still read Researching / Ready / Approved / Sent / Replied.
+- [ ] `Download rate card` saves `Automation-Squad-Rate-Card.pdf` to disk (does **not** open a new tab), and the PDF opens and matches the on-page figures.
 - [ ] `Email` opens Gmail compose with To, Subject and Body pre-filled.
 - [ ] `Copy email` copies the address and shows `Copied` for 2 seconds.
 - [ ] The `send@team-automationsolutions.me` text link opens the default mail client.
