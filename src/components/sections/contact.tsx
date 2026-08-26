@@ -1,18 +1,35 @@
+"use client";
+
 import { Mail } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { buttonClass } from "@/components/ui/button";
 import { CopyEmailButton } from "@/components/ui/copy-email-button";
+import { Spotlight } from "@/components/ui/spotlight";
+import { useSpotlight } from "@/lib/use-spotlight";
 import { gmailComposeUrl, mailtoUrl, site } from "@/lib/site";
 
+/**
+ * Client component (unlike most sections here) because the panel carries
+ * the mouse-tracking spotlight glow — this is the page's final conversion
+ * moment, so it gets the same emphasis treatment as a bundle/service card.
+ */
 export function Contact() {
+  const { ref, onPointerMove } = useSpotlight<HTMLDivElement>();
+
   return (
     <section
       id="contact"
       className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 md:px-8 md:pb-32 lg:px-10 lg:pb-40"
     >
       <Reveal>
-        <div className="rounded-[32px] border border-line bg-surface px-8 py-14 md:px-14 md:py-20 lg:px-20 lg:py-24">
-          <h2 className="max-w-[18ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:text-5xl lg:text-[3.5rem]">
+        <div
+          ref={ref}
+          onPointerMove={onPointerMove}
+          className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 px-8 py-14 shadow-card md:px-14 md:py-20 lg:px-20 lg:py-24"
+        >
+          <Spotlight />
+
+          <h2 className="max-w-[18ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-transparent md:text-5xl lg:text-[3.5rem]">
             Have a project in mind? Let&apos;s build something together.
           </h2>
 

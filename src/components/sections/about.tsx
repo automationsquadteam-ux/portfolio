@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/reveal";
+import { Eyebrow } from "@/components/ui/eyebrow";
 
 export function About() {
   return (
@@ -8,17 +9,15 @@ export function About() {
     >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         <Reveal className="md:col-span-3">
-          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
-            About
-          </span>
+          <Eyebrow>About</Eyebrow>
         </Reveal>
 
         <Reveal delay={0.08} className="md:col-span-9">
-          <p className="max-w-[52ch] text-xl leading-[1.45] tracking-[-0.015em] text-foreground md:text-2xl lg:text-[1.75rem]">
+          <p className="max-w-[52ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-xl leading-[1.45] tracking-[-0.015em] text-transparent md:text-2xl lg:text-[1.75rem]">
             We are a software house focused on building websites, AI
             automations, intelligent chatbots, and modern web applications. We
-            create software that saves businesses time through automation while
-            delivering polished user experiences.
+            create software that saves businesses time through automation
+            while delivering polished user experiences.
           </p>
         </Reveal>
       </div>

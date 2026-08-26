@@ -12,6 +12,13 @@ export type CoreService = {
   monthly: number;
   /** e.g. "+usage" appended after the monthly figure */
   monthlyNote?: string;
+  /**
+   * Column-width hint for the Pricing section's bento grid (lg breakpoint
+   * only — see the `spanClass` map in sections/pricing.tsx). Widths only
+   * vary here, never row heights: these cards hold real, variable-length
+   * copy, so forcing a fixed row height risks clipping a longer description.
+   */
+  span: "full" | "half" | "third";
 };
 
 export const coreServices: CoreService[] = [
@@ -22,6 +29,7 @@ export const coreServices: CoreService[] = [
       "A responsive website built to convert visitors into contacts: a booking or quote form, WhatsApp button, Google Maps, and basic SEO included.",
     setup: 250,
     monthly: 20,
+    span: "full",
   },
   {
     id: "assistant",
@@ -30,6 +38,7 @@ export const coreServices: CoreService[] = [
       "A chatbot trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.",
     setup: 275,
     monthly: 50,
+    span: "half",
   },
   {
     id: "voice",
@@ -39,6 +48,7 @@ export const coreServices: CoreService[] = [
     setup: 475,
     monthly: 85,
     monthlyNote: "+usage",
+    span: "half",
   },
   {
     id: "leadgen",
@@ -47,6 +57,7 @@ export const coreServices: CoreService[] = [
       "Finds businesses matching your ideal customer, pulls their contact details, and loads them into a dashboard ranked by fit.",
     setup: 650,
     monthly: 80,
+    span: "third",
   },
   {
     id: "followup",
@@ -55,6 +66,7 @@ export const coreServices: CoreService[] = [
       "Every new lead gets an instant reply, then a scheduled follow-up sequence over the next two weeks until they respond.",
     setup: 375,
     monthly: 45,
+    span: "third",
   },
   {
     id: "reputation",
@@ -63,6 +75,7 @@ export const coreServices: CoreService[] = [
       "Happy customers are sent to leave a public review. Unhappy ones are routed to a private form first, so you can fix it before it becomes one.",
     setup: 375,
     monthly: 40,
+    span: "third",
   },
 ];
 

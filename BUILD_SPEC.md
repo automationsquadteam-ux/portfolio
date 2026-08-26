@@ -5,9 +5,14 @@
 You are building a **one-page, dark-mode, premium-minimal portfolio site** for
 **Automation Squad**, an AI-automation & full-stack development studio.
 
-Reference feel: Linear · Vercel · Framer · Stripe.
-Monochrome (near-black + white + greys) with **one blue accent**. Lots of whitespace.
-Rounded cards. Soft borders instead of heavy shadows. Smooth, restrained motion.
+Reference feel: Linear · Vercel · Framer · Stripe — specifically Linear's own
+"deep space with ambient light" language (see §3.6, added 2026-08-26): a near-black
+canvas lit by slow-floating blurred blobs, glass cards that pick up a soft mouse-tracking
+glow, and gradient typography. Monochrome (near-black + white + greys) with **one blue
+accent** — still the brand-linked blue, not Linear's stock indigo (§3.1). Lots of
+whitespace. Rounded cards, softer at 16px than the original 24–32px. Multi-layer glow
+shadows instead of flat borders. Smooth, restrained motion — expo-out easing throughout,
+now including scroll-linked parallax on the hero.
 
 ---
 
@@ -21,6 +26,7 @@ Rounded cards. Soft borders instead of heavy shadows. Smooth, restrained motion.
 | §7.0 – §7.13 — all 15 site files | ✅ Built |
 | §7.14 Lead pipeline section (added 2026-08-05) | ✅ Built — lint + build re-run clean, `/` still static |
 | §7.15 Pricing section + rate-card PDF download (added 2026-08-22) | ✅ Built — lint + build re-run clean, `/` still static, PDF serves `200 application/pdf` |
+| §3.6 / §7.16 "Deep space with ambient light" redesign (added 2026-08-26) | ✅ Built — every section restyled, hamburger mobile menu added, lint + build re-run clean, `/` still static |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -113,7 +119,7 @@ portfolio/
 │   ├── logo-lockup.png             §6.2 transparent full lockup (JSON-LD logo)
 │   ├── icon-192.png                §6.2 PWA icon
 │   ├── icon-512.png                §6.2 PWA icon
-│   └── Automation_Squad_Rate_Card.pdf  §6.4 the rate-card PDF, downloadable from §7.16
+│   └── Automation_Squad_Rate_Card.pdf  §6.4 the rate-card PDF, downloadable from §7.15
 ├── src/
 │   ├── app/
 │   │   ├── favicon.ico             §6.2 multi-res 16/32/48/64, branded
@@ -124,30 +130,34 @@ portfolio/
 │   │   ├── manifest.ts             §6.3 /manifest.webmanifest
 │   │   ├── robots.ts               §6.3 /robots.txt
 │   │   ├── sitemap.ts              §6.3 /sitemap.xml
-│   │   ├── globals.css             §7.1  tokens, base, focus ring, reduced motion
-│   │   ├── layout.tsx              §7.2  fonts, full metadata, viewport
+│   │   ├── globals.css             §7.1  tokens, shadow tokens (§3.3), blob/shimmer keyframes, reduced motion
+│   │   ├── layout.tsx              §7.2  fonts, full metadata, viewport, renders <AmbientBackground>
 │   │   └── page.tsx                §7.13 composes the components below
 │   ├── components/
-│   │   ├── site-header.tsx         §7.9  client — sticky, frosts on scroll, logo chip
-│   │   ├── site-footer.tsx         §7.12 server
+│   │   ├── site-header.tsx         §7.9  client — sticky, frosts on scroll, logo chip, hamburger mobile menu (§7.16)
+│   │   ├── site-footer.tsx         §7.12 server — bg-background-deep
 │   │   ├── structured-data.tsx     §6.3  server — JSON-LD @graph
 │   │   ├── sections/
-│   │   │   ├── hero.tsx            §7.10 client — staggered entrance
+│   │   │   ├── hero.tsx            §7.10 client — staggered entrance + scroll-linked parallax (§7.16)
 │   │   │   ├── projects.tsx        §7.10 client — stagger container
-│   │   │   ├── pipeline.tsx        §7.14 server — lead dashboard link-out
-│   │   │   ├── pricing.tsx         §7.15 server — services, bundles, add-ons
+│   │   │   ├── pipeline.tsx        §7.14 client — lead dashboard link-out (client since §7.16, for the spotlight card)
+│   │   │   ├── pricing.tsx         §7.15 client — services, bundles, add-ons (client since §7.16, for the spotlight cards)
 │   │   │   ├── about.tsx           §7.10 server
-│   │   │   └── contact.tsx         §7.10 server
+│   │   │   └── contact.tsx         §7.10 client — client since §7.16, for the spotlight card
 │   │   └── ui/
 │   │       ├── reveal.tsx          §7.6  client — the scroll-reveal primitive
-│   │       ├── button.tsx          §7.7  server — buttonClass() + ButtonLink
-│   │       ├── project-card.tsx    §7.8  client — hover lift + image zoom
-│   │       └── copy-email-button.tsx §7.11 client — clipboard + Copied state
+│   │       ├── button.tsx          §7.7  server — buttonClass() + ButtonLink, glow shadow + shine sweep (§7.16)
+│   │       ├── project-card.tsx    §7.8  client — hover lift + image zoom + spotlight (§7.16)
+│   │       ├── copy-email-button.tsx §7.11 client — clipboard + Copied state
+│   │       ├── ambient-background.tsx §3.6/§7.16 server — the 4-layer ambient lighting system
+│   │       ├── spotlight.tsx       §3.6/§7.16 — the mouse-tracking glow overlay
+│   │       └── eyebrow.tsx         §3.1/§7.16 server — the shared accent-pill section label
 │   └── lib/
 │       ├── site.ts                 §7.3  name, email, Gmail/mailto URLs, nav links
 │       ├── projects.ts             §7.4  the three projects
 │       ├── motion.ts               §7.5  EASE, DURATION, variants
-│       └── pricing.ts              §7.15 services, bundles, add-ons — mirrors the PDF
+│       ├── pricing.ts              §7.15 services, bundles, add-ons — mirrors the PDF; `span` field added in §7.16
+│       └── use-spotlight.ts        §3.6/§7.16 client hook — pointer tracking for <Spotlight>
 ├── AGENTS.md                       points here
 ├── BUILD_SPEC.md                   <- you are here
 ├── eslint.config.mjs
@@ -198,56 +208,116 @@ This is Next.js **16**, not 13/14/15. Things changed.
 
 ## 3. DESIGN SYSTEM — THE SOURCE OF TRUTH
 
+> **2026-08-26 — "Deep space with ambient light" redesign.** Every token in this section
+> was revised to integrate a Linear-style ambient-lighting system: near-black canvas,
+> translucent glass surfaces, floating blurred light pools, mouse-tracking card glows,
+> gradient typography. §3.6 is new and documents that system specifically. The accent
+> **stayed** the brand-linked blue (`#3B82F6`), not Linear's stock indigo (`#5E6AD2`) —
+> that was a deliberate call, not an oversight, see the box in §3.1.
+
 ### 3.1 Colour tokens
 
-Dark is the only theme. Every value below is already contrast-checked against the
-background it is used on.
+Dark is the only theme. Surfaces and borders are translucent white now, not flat hex —
+that's what lets the ambient blobs in §3.6 show softly through every card. Contrast
+figures below are computed against the page's darkest realistic point (`#020203`); the
+actual background is a gradient that only gets lighter from there, so real contrast is
+always at least this good.
 
-| Token | Hex | Tailwind class | Used for | Contrast |
+| Token | Value | Tailwind class | Used for | Contrast |
 | --- | --- | --- | --- | --- |
-| `--background` | `#0A0A0A` | `bg-background` | Page background | — |
-| `--surface` | `#131314` | `bg-surface` | Cards, contact panel | — |
-| `--surface-hover` | `#1A1A1C` | `bg-surface-hover` | Card + button hover | — |
-| `--line` | `#232326` | `border-line` | Hairline borders, dividers | — |
-| `--line-strong` | `#2E2E33` | `border-line-strong` | Border on hover | — |
-| `--foreground` | `#FAFAFA` | `text-foreground` | Headings, primary text | 18.4:1 ✅ |
-| `--muted` | `#A1A1AA` | `text-muted` | Body copy, descriptions | 7.6:1 ✅ |
+| `--background` | `#050506` | `bg-background` | Page canvas (see §3.6 for the full layered system) | — |
+| `--background-deep` | `#020203` | `bg-background-deep` | The one deliberately flat, ambient-light-free surface: the footer | — |
+| `--surface` | `rgba(255,255,255,0.05)` | `bg-surface` | Card backgrounds — translucent so ambient light shows through | — |
+| `--surface-hover` | `rgba(255,255,255,0.08)` | `bg-surface-hover` | Card + button hover | — |
+| `--line` | `rgba(255,255,255,0.06)` | `border-line` | Hairline borders, dividers | — |
+| `--line-strong` | `rgba(255,255,255,0.1)` | `border-line-strong` | Border on hover | — |
+| `--foreground` | `#EDEDEF` | `text-foreground` | Headings, primary text — off-white, never pure `#FFF` | 15.8:1 ✅ |
+| `--muted` | `#8A8F98` | `text-muted` | Body copy, descriptions | 6.3:1 ✅ |
 | `--subtle` | `#71717A` | `text-subtle` | Meta labels, footer, tags | 4.0:1 — **≥14px only** |
-| `--accent` | `#3B82F6` | `text-accent` | Accent **text** on dark (eyebrows, category labels) | 5.4:1 ✅ |
-| `--accent-solid` | `#2563EB` | `bg-accent-solid` | Solid button **fill** (with white text) | 5.2:1 ✅ |
+| `--accent` | `#3B82F6` | `text-accent` | Accent **text** on dark (eyebrows, category labels) | 5.1:1 ✅ |
+| `--accent-solid` | `#2563EB` | `bg-accent-solid` | Solid button **fill** (with white text) | 5.0:1 ✅ |
 | `--accent-hover` | `#1D4ED8` | `bg-accent-hover` | Solid button hover fill | ✅ |
 | `--accent-fg` | `#FFFFFF` | `text-accent-fg` | Text on top of accent fill | ✅ |
+| `--accent-glow` | `rgba(59,130,246,0.3)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows, ambient blobs | — |
 
-> **Why two blues?** `#3B82F6` is bright enough to read as *text* on `#0A0A0A` (5.4:1).
-> `#2563EB` is dark enough for *white text on top of it* (5.2:1). Using one blue for both
-> fails WCAG AA in one direction or the other. Use the right one for the job.
+`--accent-glow` is deliberately **not** wired into `@theme inline`. Exposing it as
+`bg-accent-glow` / `border-accent-glow` etc. would generate confusingly-named utilities
+(`border-accent-glow` reads like a border color, not a glow). It's used the way it's
+meant to be used: as a raw `var(--accent-glow)` inside the shadow tokens in §3.3 and
+inside `<Spotlight>`'s inline `radial-gradient()`.
 
-**Accent budget:** the accent may appear at most in these places —
-hero eyebrow, primary buttons, project category labels, link hover, focus rings.
-Nowhere else. If it starts feeling colourful, you have used too much.
+> **Why two blues?** `#3B82F6` is bright enough to read as *text* on the page background
+> (5.1:1). `#2563EB` is dark enough for *white text on top of it* (5.0:1). Using one blue
+> for both fails WCAG AA in one direction or the other. Use the right one for the job.
+
+> **Why the accent stayed blue, not Linear's indigo.** The reference "Deep space with
+> ambient light" system specifies `#5E6AD2` (Linear's actual brand indigo) as its accent.
+> This site's blue is deliberately close to the logo's brand navy (`#052957` — see §6.2's
+> hue-distance rationale, unchanged). Swapping to indigo would have been full fidelity to
+> the reference system, but would break that accent-to-logo relationship for no real
+> gain — the ambient-lighting language works identically with either hue since it's a
+> *lightness/depth* system, not a *hue* system. Every ambient blob in §3.6 is a shade of
+> this same blue for exactly that reason: the whole background is meant to read as "the
+> accent, diffused," not as a second colour.
+
+**Accent budget — unchanged in spirit, widened in scope.** Exactly one accent-coloured
+element per section: the section's `<Eyebrow>` pill (`ui/eyebrow.tsx`). Also still
+accent: primary buttons, project category labels, link hover, focus rings, and the
+ambient blobs (which are accent-family by definition, see above). Secondary in-section
+labels — Pricing's "Core Services" / "Bundles" / "Add-Ons" / "How We Work" — stay
+`text-subtle`, no pill. If it starts feeling colourful, you have used too much.
 
 ### 3.2 Typography
 
-Fonts are already wired via `next/font/google` in the scaffold — **keep Geist + Geist Mono**.
-They are Vercel's typefaces and are exactly the Linear/Vercel register we want. No new fonts.
+Fonts are still Geist + Geist Mono via `next/font/google` — **the reference system's own
+stack is `"Inter", "Geist Sans", system-ui`, and we kept Geist over introducing Inter.**
+Geist is Vercel's product font, already closer to this aesthetic's register than a
+generic Inter swap would be, and typeface wasn't part of what this redesign changed.
 
 | Role | Family | Class |
 | --- | --- | --- |
 | Headings + body | Geist | `font-sans` (default) |
 | Eyebrows, labels, tags, index numbers | Geist Mono | `font-mono` |
 
-**Type scale** — use these exact recipes:
+**Type scale** — sizes are unchanged from the original build; what's new is that
+headlines and one big-statement paragraph now render as gradient text (see below).
 
 | Element | Classes |
 | --- | --- |
-| H1 (hero) | `text-[2.75rem] sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-semibold leading-[1.03] tracking-[-0.035em] text-balance` |
+| H1 (hero) | `text-[2.75rem] sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-semibold leading-[1.03] tracking-[-0.035em] text-balance` + gradient fill, see below |
 | H2 (section titles) | `text-4xl md:text-5xl font-semibold leading-[1.08] tracking-[-0.03em]` |
 | H3 (project titles) | `text-xl md:text-2xl font-semibold tracking-[-0.02em]` |
-| Big statement (About) | `text-xl md:text-2xl lg:text-[1.75rem] leading-[1.45] tracking-[-0.015em]` |
+| Big statement (About) | `text-xl md:text-2xl lg:text-[1.75rem] leading-[1.45] tracking-[-0.015em]` + gradient fill |
 | Body / descriptions | `text-[15px] md:text-base leading-relaxed text-muted` |
 | Eyebrow / label (mono) | `font-mono text-[11px] md:text-xs font-medium uppercase tracking-[0.18em]` |
 | Tags (mono) | `font-mono text-[11px] tracking-[0.04em] text-subtle` |
 | Button label | `text-sm font-medium` |
+
+**Gradient text.** Two patterns, both composed directly with Tailwind utilities against
+the `foreground`/`accent` tokens — no separate CSS class needed:
+
+```
+/* Headline treatment — Hero H1, Contact H2, About's big statement */
+bg-linear-to-b from-foreground via-foreground/95 to-foreground/70
+  bg-clip-text text-transparent
+/* (Contact/About use a shorter two-stop version: from-foreground to-foreground/75) */
+
+/* Accent emphasis — one phrase inside the Hero H1 only ("AI Automations") */
+bg-linear-to-r from-accent via-blue-300 to-accent
+  bg-size-[200%_auto] bg-position-[0%_center]
+  bg-clip-text text-transparent
+  animate-[text-shimmer_4s_linear_infinite]   /* keyframes in globals.css */
+```
+
+`bg-linear-to-*`, not `bg-gradient-to-*` — Tailwind v4's canonical name for the same
+utility; `bg-gradient-to-*` still works but is the deprecated alias. Use `bg-linear-to-*`
+in any new code so the codebase doesn't end up with both spellings.
+
+> **R9 note on the shimmer.** `text-shimmer` animates `background-position`, not
+> `opacity`/`transform` — technically outside R9's letter. It's a narrow, deliberate
+> exception: the element is a few words of text, so the repaint cost is negligible, and
+> it's the one place the reference system's "animated gradient shimmer" bold-factor
+> lives. Don't reach for `background-position` animation anywhere else on the page.
 
 Rules: body line-height ≥ 1.5 · body copy capped at `max-w-[46ch]` · headings never below
 `leading-[1.0]` · **never** go below 14px for body text.
@@ -262,45 +332,131 @@ Container:      mx-auto w-full max-w-[1200px] px-6 md:px-8 lg:px-10
 Section rhythm: py-24 md:py-32 lg:py-40
 Grid gap:       gap-5 md:gap-6
 
-Radius:  buttons & pills  -> rounded-full
-         project cards    -> rounded-3xl        (24px)
-         card images      -> rounded-2xl        (16px)
-         contact panel    -> rounded-[32px]
+Radius:  buttons               -> rounded-lg    (8px)   — was rounded-full; badges/pills
+                                                            kept the pill shape, see below
+         badges & pills        -> rounded-full           (Eyebrow, project badges, bundle
+                                                            tags, the header's Let's Talk
+                                                            chip on mobile-menu links)
+         cards, glass panels   -> rounded-2xl   (16px)   — was rounded-3xl (24px) / rounded-[32px]
+         card images (nested)  -> rounded-xl    (12px)   — one step down from the card's own 16px
 
-Borders: 1px, border-line (#232326). Hover -> border-line-strong (#2E2E33).
-
-Shadows: almost none. Depth comes from surface lifts + borders, not shadows.
-         The ONE allowed shadow is on a hovered project card:
-         shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)]
+Borders: 1px, border-line (translucent white 6%). Hover -> border-line-strong (10%).
 ```
+
+**Radius note.** The original build used larger, softer radii (24–32px) for a
+"marketing site" feel. This redesign's reference system specifies 16px cards uniformly —
+tighter, more "software," closer to how Linear's actual app looks. Buttons dropped the
+pill shape for the same reason (`rounded-lg`); pills stayed pills where they're actually
+badges (a status chip, a tag), matching the reference system's own radius table, which
+gives buttons and badges two different shapes.
+
+**Shadow system — centralized as Tailwind's own `shadow-*` scale**, not one-off arbitrary
+`shadow-[...]` strings on each component. Defined once in `globals.css`'s `@theme inline`
+block as `--shadow-card` / `--shadow-card-hover` / `--shadow-cta` / `--shadow-cta-hover` /
+`--shadow-inset`, which makes them ordinary Tailwind utilities (`shadow-card`,
+`hover:shadow-card-hover`, …) usable with any variant:
+
+```
+--shadow-card:       0 0 0 1px var(--line), 0 2px 20px rgba(0,0,0,.4), 0 0 40px rgba(0,0,0,.2)
+--shadow-card-hover:  0 0 0 1px var(--line-strong), 0 8px 40px rgba(0,0,0,.5), 0 0 80px var(--accent-glow)
+--shadow-cta:         0 0 0 1px rgba(59,130,246,.5), 0 4px 12px var(--accent-glow), inset 0 1px 0 0 rgba(255,255,255,.2)
+--shadow-cta-hover:   0 0 0 1px rgba(59,130,246,.65), 0 6px 20px rgba(59,130,246,.4), inset 0 1px 0 0 rgba(255,255,255,.25)
+--shadow-inset:       inset 0 1px 0 0 rgba(255,255,255,.1)
+```
+
+Every glass card (project cards, pricing service/bundle cards, the pipeline status
+panel, the contact panel, the add-ons list) uses `shadow-card hover:shadow-card-hover`.
+Primary buttons use `shadow-cta hover:shadow-cta-hover`. Secondary buttons use
+`shadow-inset` (a one-line top-edge highlight, not a full multi-layer shadow). **Never
+write a new one-off `shadow-[...]` arbitrary value for a card or button** — add a token
+here instead, the same way the five above were added.
 
 ### 3.4 Motion tokens
 
 | Token | Value | Where |
 | --- | --- | --- |
-| Standard easing | `cubic-bezier(0.16, 1, 0.3, 1)` (ease-out-expo) | All scroll reveals |
+| Standard easing | `cubic-bezier(0.16, 1, 0.3, 1)` (ease-out-expo) | All scroll reveals, header, mobile menu |
 | Reveal duration | `0.6s` | Section / card entrances |
-| Micro-interaction | `0.2s`–`0.3s` | Buttons, links, borders |
+| Micro-interaction | `0.2s`–`0.3s` | Buttons, links, borders, mobile menu open/close |
 | Image zoom | `0.7s` | Card image `scale` on hover |
 | Stagger | `0.08s` per child | Hero lines, project grid |
 | Hover spring | `{ type: "spring", stiffness: 300, damping: 26 }` | Card lift |
+| Button shine sweep | `0.5s`, expo-out | Primary button `before:` pseudo-element, hover only — see §3.3/§7.7 |
+| Blob float | `9s`/`10s`/`11s`, ease-in-out, infinite, staggered via negative `animation-delay` | Ambient background blobs — see §3.6 |
+| Text shimmer | `4s`, linear, infinite | The one accent gradient phrase in the Hero H1 |
+| Hero parallax | scroll-linked (not time-based) — opacity `1→0`, scale `1→0.95`, y `0→100px` over the hero's own scroll range | Hero section only — see §7.10 |
 
 ### 3.5 Do / Don't
 
 | ✅ Do | ❌ Don't |
 | --- | --- |
-| Whitespace as the main design element | Decorative blobs, glows, 3D, particles |
-| Hairline borders for structure | Heavy drop shadows |
+| Whitespace as the main design element | Decorative blobs *without restraint* — ours are 3 max, one hue family, low opacity (§3.6) |
+| Hairline borders for structure, softened by the shadow tokens in §3.3 | Heavy, single-layer drop shadows |
 | Two font weights max per block (500/600) | Six different weights |
 | One primary CTA per section | Three equally loud buttons |
-| Cards lift `-6px` on hover | Cards that rotate, skew, or tilt |
+| Cards lift `-6px` on hover, glass gradient + spotlight glow | Cards that rotate, skew, or tilt |
 | Text stays perfectly readable while animating | Blur-in text, letter-by-letter typing |
+| One monochrome blob hue family (shades of the brand blue) | Multiple unrelated hues in the ambient system (the reference system's own purple/indigo mix) |
+
+### 3.6 Ambient background & spotlight system (added 2026-08-26)
+
+The signature of this redesign. Two reusable primitives, used sitewide:
+
+**`<AmbientBackground />`** (`ui/ambient-background.tsx`, rendered once in
+`layout.tsx`, `position: fixed`, `-z-10`, behind everything) — four stacked layers:
+
+1. Base radial gradient (`#0a0a0f` → `#050506` → `#020203`) for vertical depth.
+2. A faint SVG noise texture (`opacity-[0.02]`) so the gradients don't band.
+3. **Three** floating blurred blobs — deliberately fewer than the reference system's
+   four-blob spec, and deliberately **one hue family** (three shades of the brand blue:
+   `var(--accent)`, `#1D4ED8`, `#60A5FA`), not its purple/indigo mix — see §3.1's "why the
+   accent stayed blue" box. Each blob floats on its own `blob-float` `@keyframes`
+   (translateY + rotate, 9–11s, staggered with negative `animation-delay` so they don't
+   move in sync) — pure CSS, so the whole layer needs no JS and the existing
+   `prefers-reduced-motion` block in `globals.css` freezes it for free.
+4. A 64px grid-line overlay at `opacity-[0.025]`.
+
+It's a **server component** — nothing in it needs interactivity, so it costs nothing on
+the client bundle.
+
+**`useSpotlight()` + `<Spotlight />`** (`lib/use-spotlight.ts` + `ui/spotlight.tsx`) —
+the mouse-tracking radial glow on every glass card. The hook writes pointer position to
+`--spot-x` / `--spot-y` custom properties directly on the DOM node via
+`ref.current.style.setProperty(...)` — no React state, no re-render per mouse move.
+`<Spotlight />` renders as a card's first child and reads those properties in a
+`radial-gradient(280px circle at var(--spot-x) var(--spot-y), var(--accent-glow),
+transparent 70%)`, revealed via `group-hover/spot:opacity-100`.
+
+Usage pattern, every time:
+
+```tsx
+const { ref, onPointerMove } = useSpotlight<HTMLElement>();
+
+<article ref={ref} onPointerMove={onPointerMove} className="group/spot relative isolate ...">
+  <Spotlight />
+  {/* rest of the card */}
+</article>
+```
+
+`relative isolate` is required, not optional — `<Spotlight>` sits at `-z-10` so it paints
+behind the card's own (static, non-positioned) text content. Without `isolate` creating a
+stacking context on the parent, that negative z-index can escape and stack against
+unrelated page furniture instead of staying scoped to the card. See the doc comment in
+`ui/spotlight.tsx` for the full reasoning.
+
+Every glass card sitewide is a spotlight card: project cards, pricing service/bundle
+cards, the pipeline status panel, the contact panel. The pricing add-ons list is the one
+glass surface that deliberately **isn't** — it's a reference list, not a decision
+surface, so it gets the shadow/gradient treatment without the glow.
 
 ---
 
 ## 4. PAGE MAP + WIREFRAMES
 
-Order, top to bottom. Nothing else.
+Order, top to bottom. Nothing else. **Unchanged by the 2026-08-26 redesign** — §7.16
+restyled every section in place but didn't reorder, add, or remove any of them. The
+ASCII boxes below can't show glass cards, ambient blobs or the mouse-tracking glow; for
+what the page actually looks like now, see §3.6.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -1822,6 +1978,79 @@ Notes for whoever edits this next:
   `$1,950` get their comma automatically and there's one function (`formatUSD`) to fix if the
   currency ever changes.
 
+### 7.16 — "Deep space with ambient light" redesign (added 2026-08-26)  ✅ DONE
+
+The whole page restyled to the ambient-lighting system documented in §3.1–§3.6. Nothing
+about the page's copy, structure, section order, or data changed — every string in §5 and
+every figure in §5's Pricing block is untouched. This step is styling and three new
+interaction patterns (spotlight cards, hero parallax, the mobile menu) layered onto the
+existing component tree.
+
+**New files** (see §1.2 for the full tree):
+
+- `ui/ambient-background.tsx` — the 4-layer background system, §3.6. Rendered once, in
+  `layout.tsx`, as the first child of `<body>`, before `{children}`.
+- `lib/use-spotlight.ts` + `ui/spotlight.tsx` — the mouse-tracking card glow, §3.6.
+- `ui/eyebrow.tsx` — the shared accent-pill section label, used by Pipeline, Pricing and
+  About. Hero renders the same markup inline instead (its eyebrow is a `motion.span`
+  participating in the hero's stagger `variants`, which a wrapped component can't easily
+  forward) — if you ever touch the pill's visual design, change both places.
+
+**Files restyled, no structural change:** `globals.css` (full token rewrite, §3.1–§3.3;
+new `blob-float` / `text-shimmer` `@keyframes`), `layout.tsx` (renders
+`<AmbientBackground>`, `themeColor` updated to `#050506`), `button.tsx` (glow shadow +
+`before:`-pseudo-element shine sweep, `rounded-lg` instead of `rounded-full`),
+`site-header.tsx`, `hero.tsx`, `project-card.tsx`, `pipeline.tsx`, `pricing.tsx`,
+`about.tsx`, `contact.tsx`, `site-footer.tsx`.
+
+**Client/server boundary shifted.** `pipeline.tsx`, `pricing.tsx` and `contact.tsx` are
+now client components — each needed `useSpotlight()` for its card's mouse-tracking glow.
+`about.tsx` is the one section that stayed server (its only "interactivity" is the shared
+`<Reveal>`, which is already a client leaf). The `"use client"` list in §10 reflects this.
+
+**Header: added the hamburger mobile menu.** This directly **supersedes** the original
+build's "Mobile navigation decision (deliberate)" in §9, which explicitly said not to add
+one. Two things changed since that call was made: the reference design system this
+redesign integrates specifies the pattern explicitly (animated dropdown, Menu/X toggle,
+full-width CTA at the bottom), and the nav grew from 3 items to 4 (Pricing was added in
+§7.15) — past the point where "just scroll to reach it" holds up as well. See §9 for the
+current spec; the old reasoning is gone, not just outdated, since it's now the opposite
+of what's built.
+
+**Hero: added scroll-linked parallax**, tracked only across the hero's own height
+(`useScroll({ target: sectionRef, offset: ["start start", "end start"] })`), not the full
+page — the fade/scale/drift finishes before Projects comes into view. Applied via a
+`style` prop on a wrapper `motion.div` that's **separate** from the existing stagger-entrance
+`motion.div` — combining scroll-driven and mount-driven `opacity`/`y` motion values on the
+*same* element would fight each other. Disabled outright (not just at zero-amplitude)
+under `useReducedMotion()`.
+
+**Pricing: Core Services became an asymmetric bento grid** (the one place bento applies —
+see the decision recorded in §3's redesign note and the `span` field on `CoreService` in
+`lib/pricing.ts`). Deliberately **width-only** — `sm:col-span-2 lg:col-span-6` /
+`lg:col-span-3` / `lg:col-span-2` — never row-span. The reference system's own bento
+spec varies row height too (`auto-rows-[180px]`, a `col-span-4 row-span-2` hero card),
+which works for short fixed-content feature cards but risks clipping here: every service
+card holds a real, variable-length description plus a price stat block, and a fixed row
+height can't safely fit all six. Grid auto-placement already sizes each row to its
+tallest card with plain `grid-auto-rows: auto` (the default) — that's what makes the
+width-only version safe.
+
+Notes for whoever edits this next:
+
+- **Every glass card is a spotlight card** (project cards, pricing service/bundle cards,
+  the pipeline panel, the contact panel) **except** the pricing add-ons list, which
+  deliberately isn't — it's a reference list, not a decision surface. If you add a new
+  card-shaped surface anywhere, default to giving it the spotlight; leaving it off should
+  be the deliberate choice, not an oversight.
+- **`shadow-[...]` arbitrary values are gone from every card and button.** They all pull
+  from the `shadow-card` / `shadow-card-hover` / `shadow-cta` / `shadow-cta-hover` /
+  `shadow-inset` tokens in §3.3. Adding a new elevated surface should reuse one of those,
+  not invent a new arbitrary shadow string.
+- **`bg-linear-to-*`, not `bg-gradient-to-*`**, in every new gradient this redesign added
+  — Tailwind v4's canonical name (§3.2). The two are equivalent; don't mix spellings in
+  new code.
+
 ---
 
 ## 8. MOTION SPEC
@@ -1857,8 +2086,8 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | --- | --- | --- | --- |
 | Container padding | `px-6` | `px-8` | `px-10` |
 | Header height | 64px | 72px | 72px |
-| Header nav links | **hidden** | visible | visible |
-| Header right | `Let's talk` pill (h-9) | pill (h-10) | pill (h-10) |
+| Header nav links | hidden — reached via the hamburger menu | visible | visible |
+| Header right | hamburger toggle only | `Let's talk` button (h-10) | `Let's talk` button (h-10) |
 | Hero H1 | 44px | 60px | 72px → 84px at xl |
 | Hero buttons | wrap to 2 rows if needed | inline | inline |
 | Project grid | 1 column | 2 columns | 2 columns |
@@ -1872,9 +2101,15 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | Contact panel padding | `px-8 py-14` | `px-14 py-20` | `px-20 py-24` |
 | Footer | stacked rows | one row | one row |
 
-**Mobile navigation decision (deliberate):** with only four anchors on a single page, a
-hamburger drawer is more chrome than value. On mobile the header shows the wordmark plus the
-`Let's talk` pill; everything else is reached by scrolling. Do **not** add a hamburger menu.
+**Mobile navigation (revised 2026-08-26 — see §7.16).** The original build deliberately
+shipped *without* a hamburger menu (three anchors didn't justify one). That decision is
+superseded, not just outdated: the reference design system this redesign integrates
+specifies the pattern explicitly, and the nav grew to 4 items when Pricing was added. On
+mobile the header now shows the wordmark plus a `Menu`/`X` toggle (`site-header.tsx`);
+tapping it drops an animated panel (`opacity`/`y`, 0.2s) with a blurred
+`bg-background/75 backdrop-blur-xl` background, the four nav links stacked vertically,
+and a full-width `Let's talk` primary button at the bottom. The desktop `Let's talk`
+button is hidden below `md` — on mobile it lives only inside the open menu.
 
 Also required: no horizontal scroll at 320px · nothing hidden behind the fixed header
 (`scroll-mt-24` on every section) · all tap targets ≥ 44×44px.
@@ -1887,20 +2122,22 @@ Also required: no horizontal scroll at 320px · nothing hidden behind the fixed 
 - [x] Exactly one `<h1>` on the page (the hero). Sections use `<h2>`, project titles `<h3>`. No skipped levels. — *verified in the rendered HTML: 1×h1, 2×h2, 3×h3*
 - [x] `<nav aria-label="Primary">` on the header nav.
 - [x] Every `<Image>` has a descriptive `alt` (already in `projects.ts`).
-- [x] Decorative elements get `aria-hidden="true"` (the hero glow, all icons).
+- [x] Decorative elements get `aria-hidden="true"` (`AmbientBackground`, `Spotlight`, the hero glow's successor, all icons).
 - [x] Every external link: `target="_blank" rel="noopener noreferrer"` **and** an sr-only "opens in a new tab" hint. — *the Pricing PDF download is same-origin and uses `download` instead; it intentionally does not get this treatment, see §6.4.*
-- [x] Focus ring visible on every interactive element (global `:focus-visible` rule in §7.1). Never `outline: none`.
+- [x] Focus ring visible on every interactive element (global `:focus-visible` rule in §7.1). Never `outline: none`. — *outline-based, not a box-shadow ring, deliberately: several surfaces (primary buttons, project card images) use `overflow-hidden`, which would clip a ring but not an outline.*
 - [x] Tab order matches visual order. — *DOM order matches visual order; no `tabindex` overrides anywhere*
 - [x] Copy-email result announced via `aria-live="polite"`.
 - [x] `text-subtle` (#71717A, 4.0:1) is used **only** at ≥14px on non-essential meta text. Never for body copy.
-- [x] `prefers-reduced-motion` honoured everywhere. — *implemented in `Reveal`, `ProjectCard` and the global CSS block; still needs the browser check in §11*
+- [x] Mobile menu toggle has `aria-expanded` + `aria-controls` + a state-dependent `aria-label` ("Open menu" / "Close menu"), and the panel is dismissed on link click.
+- [x] `prefers-reduced-motion` honoured everywhere. — *implemented in `Reveal`, `ProjectCard`, the global CSS block (which also freezes the ambient blobs and text shimmer for free — both are plain CSS `@keyframes`), and explicitly disabled (not just zeroed) in the Hero's scroll-linked parallax via `useReducedMotion()`.*
 
 ### Performance
 - [x] Correct `sizes` on every `fill` image (already in §7.8) — wrong `sizes` = oversized downloads.
 - [x] Image containers have a fixed `aspect-[…]` so nothing shifts while loading (CLS < 0.1).
 - [x] Fonts via `next/font/google` with `display: "swap"` — no `<link>` to Google Fonts, no FOIT.
-- [x] `"use client"` only on `site-header`, `hero`, `projects`, `project-card`, `reveal`, `copy-email-button`. `layout`, `page`, `pipeline`, `pricing`, `about`, `contact`, `site-footer`, `button` stay server components.
-- [x] Only `opacity` / `transform` animated.
+- [x] `"use client"` only where interactivity actually lives: `site-header`, `hero`, `projects`, `project-card`, `pipeline`, `pricing`, `contact`, `reveal`, `copy-email-button`, `use-spotlight`. `layout`, `page`, `about`, `site-footer`, `button`, `ambient-background`, `spotlight`, `eyebrow` stay server components. (`pipeline` / `pricing` / `contact` moved from server to client in §7.16, each for its spotlight card's `useSpotlight()` hook.)
+- [x] Only `opacity` / `transform` animated — *two narrow, documented exceptions: the ambient blobs' `blob-float` keyframes animate `transform` only (compliant), but the Hero's accent-phrase `text-shimmer` animates `background-position` on a few words of text (§3.2's R9 note) and the spotlight's position update writes CSS custom properties per pointer-move rather than animating a CSS property at all (no animation loop, event-driven).*
+- [x] Ambient background is `position: fixed` (no layout/paint cost on scroll) and a server component (zero client JS).
 - [x] No external scripts, no analytics, no icon-font, no CSS-in-JS runtime.
 - [x] Images served through `next/image` — *optimiser returns HTTP 200 for all three*
 - [ ] ⚠️ Project screenshots optimised, < 600 KB each. — **blocked: the three files are placeholders.** Re-check after swapping in the real screenshots.
@@ -1932,6 +2169,8 @@ npm run dev      # then open http://localhost:3000
 - [x] Gmail compose URL and `mailto:` fallback both present.
 - [x] All three `/_next/image` requests return HTTP 200.
 - [x] No Tech Stack / testimonial / blog / logo-wall markup anywhere in the output. — *Pricing and Lead pipeline are the two approved exceptions to R5, see §0.*
+- [x] Redesign (§7.16) markers present in the served HTML: `blob-float`, `text-shimmer`, `shadow-card`, `rounded-2xl`, `bg-linear-to-b`, `group/spot`, `lg:col-span-6` (the bento hero card). `/` is still `○ (Static)` and the mobile menu (`id="mobile-menu"`) correctly does **not** appear in the initial HTML — it only mounts once `menuOpen` is toggled client-side.
+- [x] All pricing figures and the PDF still verified byte-for-byte against §7.15's original check after the restyle: `$1,050`, `$1,950`, `$280`, all three `Save $… on setup` lines, and `/Automation_Squad_Rate_Card.pdf` still serves `200 application/pdf`.
 
 **Metadata & brand (§6.2 / §6.3)**
 - [x] All 13 routes/assets serve 200 with the right content-type: `/`, `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, `/opengraph-image`, `/twitter-image`, `/icon.png`, `/apple-icon.png`, `/favicon.ico`, `/logo-mark.png`, `/logo-lockup.png`, `/icon-192.png`, `/icon-512.png`.
@@ -1956,9 +2195,15 @@ These need a real browser. Nothing below has been verified.
 
 **Interaction**
 - [ ] Header is transparent at the top and turns frosted + hairline-bordered after ~24px of scroll.
+- [ ] Below `md`: header shows only the wordmark + hamburger icon (no inline `Let's talk`). Tapping it opens a blurred dropdown with all four links stacked and a full-width `Let's talk` button at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
 - [ ] `Projects` / `Pricing` / `About` / `Contact` / `Let's talk` all scroll smoothly to the right section, and the heading is **not** hidden under the header.
 - [ ] `View Projects` → projects section. `Contact Me` → contact section.
-- [ ] Hovering a card: lifts ~6px, border lightens, image zooms slightly, arrow nudges.
+- [ ] The three ambient background blobs are visible and slowly floating (near-invisible if reduced motion is on — see the Accessibility checks below).
+- [ ] Moving the mouse over a project card, pricing card, the pipeline panel, or the contact panel shows a soft blue glow following the cursor.
+- [ ] Hovering a project card: lifts ~6px, border lightens, image zooms slightly, arrow nudges.
+- [ ] Hovering a primary button: background brightens, glow increases, a diagonal light sweep passes across it once.
+- [ ] Scrolling past the hero: it fades, shrinks slightly and drifts down before Projects comes into view — not still animating once Projects is on screen.
+- [ ] The "AI Automations" phrase in the Hero H1 has a slow, continuously animating blue gradient shimmer.
 - [ ] `View Project` opens the correct site in a **new tab** (check all three URLs).
 - [ ] `View the dashboard` opens `https://leads-website-alpha.vercel.app/` in a **new tab**, and the statuses on that page still read Researching / Ready / Approved / Sent / Replied.
 - [ ] `Download rate card` saves `Automation-Squad-Rate-Card.pdf` to disk (does **not** open a new tab), and the PDF opens and matches the on-page figures.
@@ -1974,7 +2219,7 @@ These need a real browser. Nothing below has been verified.
 
 **Accessibility**
 - [ ] Tab through the entire page: a visible blue focus ring on every stop, in visual order.
-- [ ] DevTools → Rendering → **Emulate `prefers-reduced-motion: reduce`** → reload. Content still appears (fades only), nothing slides, nothing is stuck invisible.
+- [ ] DevTools → Rendering → **Emulate `prefers-reduced-motion: reduce`** → reload. Content still appears (fades only), nothing slides, nothing is stuck invisible. The ambient blobs and the Hero's text shimmer are frozen in place (not just slowed). The Hero no longer fades/scales/drifts while scrolling past it.
 - [ ] DevTools → Lighthouse → Accessibility = 100.
 
 **Content**

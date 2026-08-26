@@ -1,28 +1,40 @@
 @import "tailwindcss";
 
-/* ─────────────────────────── Raw palette (dark only) ─────────────────────── */
+/* ───────────────── Raw palette — deep space with ambient light ───────────── */
+/* Near-black base + a single accent (brand blue, not Linear's stock indigo —
+   see BUILD_SPEC.md §3.1 for why the accent stays tied to the logo). Surfaces
+   and borders are translucent white so the ambient background (globals below,
+   rendered in <AmbientBackground>) shows softly through every card. */
 :root {
   color-scheme: dark;
 
-  --background: #0a0a0a;
-  --surface: #131314;
-  --surface-hover: #1a1a1c;
-  --line: #232326;
-  --line-strong: #2e2e33;
+  --background: #050506;
+  --background-deep: #020203;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.1);
 
-  --foreground: #fafafa;
-  --muted: #a1a1aa;
+  --foreground: #ededef;
+  --muted: #8a8f98;
   --subtle: #71717a;
 
   --accent: #3b82f6;
   --accent-solid: #2563eb;
   --accent-hover: #1d4ed8;
   --accent-fg: #ffffff;
+  /* not exposed as Tailwind utilities — referenced directly (var(--accent-glow))
+     inside the shadow tokens below and the spotlight overlay. */
+  --accent-glow: rgba(59, 130, 246, 0.3);
 }
 
 /* ── Expose them to Tailwind as bg-, text- and border- utilities ─────────── */
+/* NOTE: never type the two-character CSS comment terminator inside a comment
+   body (asterisk immediately followed by slash) — it closes the comment
+   early and Lightning CSS emits a build warning. */
 @theme inline {
   --color-background: var(--background);
+  --color-background-deep: var(--background-deep);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-line: var(--line);
@@ -39,6 +51,20 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* ── Centralized multi-layer shadow/glow tokens ─────────────────────────
+     Every elevated surface pulls from these instead of a one-off arbitrary
+     box-shadow string, so the "border highlight + diffuse shadow + ambient
+     glow" formula stays consistent everywhere it's used. */
+  --shadow-card: 0 0 0 1px var(--line), 0 2px 20px rgba(0, 0, 0, 0.4), 0 0 40px
+    rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 0 0 1px var(--line-strong), 0 8px 40px rgba(0, 0, 0, 0.5),
+    0 0 80px var(--accent-glow);
+  --shadow-cta: 0 0 0 1px rgba(59, 130, 246, 0.5), 0 4px 12px var(--accent-glow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  --shadow-cta-hover: 0 0 0 1px rgba(59, 130, 246, 0.65), 0 6px 20px
+    rgba(59, 130, 246, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+  --shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 /* ───────────────────────────────── Base ──────────────────────────────────── */
@@ -60,7 +86,9 @@ body {
   color: var(--foreground);
 }
 
-/* One consistent focus ring everywhere */
+/* One consistent focus ring everywhere. Outline (not a box-shadow ring) is
+   deliberate: several surfaces below use overflow-hidden for the button
+   shine sweep / card image zoom, which would clip a box-shadow ring. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -82,6 +110,28 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
+}
+
+/* ───────────────── Ambient background motion (AmbientBackground) ─────────── */
+/* Large blurred blobs float slowly to simulate cinematic light pools. Kept in
+   plain CSS (not @theme) since it's an animation, not a design token. */
+@keyframes blob-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(1deg);
+  }
+}
+
+/* Shimmer sweep for gradient-accent text (see Hero). background-position
+   isn't a compositor property like transform/opacity, but the element it
+   runs on is a few words of text — the repaint cost is negligible. */
+@keyframes text-shimmer {
+  to {
+    background-position: 200% center;
+  }
 }
 
 /* ──────────────────────── Reduced motion (R8) ────────────────────────────── */

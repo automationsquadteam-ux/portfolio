@@ -1,7 +1,12 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { buttonClass } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Spotlight } from "@/components/ui/spotlight";
 import { leadsDashboard } from "@/lib/site";
+import { useSpotlight } from "@/lib/use-spotlight";
 
 /**
  * The status vocabulary is the one the live dashboard uses, so a visitor who
@@ -36,7 +41,14 @@ const stages = [
   },
 ] as const;
 
+/**
+ * Client component (unlike most sections here) because the status card
+ * carries the mouse-tracking spotlight glow, which needs `useSpotlight`'s
+ * pointer handler.
+ */
 export function Pipeline() {
+  const { ref, onPointerMove } = useSpotlight<HTMLDivElement>();
+
   return (
     <section
       id="pipeline"
@@ -45,9 +57,7 @@ export function Pipeline() {
       <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-6">
         {/* ── Left: the pitch ──────────────────────────────────────────── */}
         <Reveal className="md:col-span-5">
-          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
-            Live Dashboard
-          </span>
+          <Eyebrow>Live Dashboard</Eyebrow>
 
           <h2 className="mt-6 max-w-[16ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:text-5xl">
             Our lead engine, in the open.
@@ -73,7 +83,13 @@ export function Pipeline() {
 
         {/* ── Right: the status list ───────────────────────────────────── */}
         <Reveal delay={0.08} className="md:col-span-7">
-          <div className="rounded-3xl border border-line bg-surface p-2">
+          <div
+            ref={ref}
+            onPointerMove={onPointerMove}
+            className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card transition-shadow duration-300 hover:shadow-card-hover"
+          >
+            <Spotlight />
+
             <div className="flex items-center justify-between gap-3 px-3 py-2.5">
               <span className="truncate font-mono text-[11px] tracking-[0.04em] text-subtle">
                 {leadsDashboard.host}
@@ -87,11 +103,11 @@ export function Pipeline() {
               </span>
             </div>
 
-            <ul className="rounded-2xl border border-line bg-background p-1.5">
+            <ul className="rounded-xl border border-line bg-background p-1.5">
               {stages.map((stage) => (
                 <li
                   key={stage.index}
-                  className="flex items-baseline gap-4 rounded-xl px-3 py-3.5 transition-colors duration-200 hover:bg-surface md:px-4"
+                  className="flex items-baseline gap-4 rounded-lg px-3 py-3.5 transition-colors duration-200 hover:bg-surface md:px-4"
                 >
                   <span className="font-mono text-[11px] tracking-[0.04em] text-subtle">
                     {stage.index}

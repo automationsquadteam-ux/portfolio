@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { keywords, site } from "@/lib/site";
+import { AmbientBackground } from "@/components/ui/ambient-background";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -66,7 +67,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A0A0A",
+  themeColor: "#050506",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -78,6 +79,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
+        <AmbientBackground />
         {children}
       </body>
     </html>

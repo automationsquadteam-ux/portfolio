@@ -1,6 +1,11 @@
+"use client";
+
 import { Download } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { buttonClass } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Spotlight } from "@/components/ui/spotlight";
+import { useSpotlight } from "@/lib/use-spotlight";
 import {
   addOns,
   bundles,
@@ -10,7 +15,18 @@ import {
   pricingIntro,
   pricingUpdated,
   ratecard,
+  type Bundle,
+  type CoreService,
 } from "@/lib/pricing";
+
+/** lg-breakpoint column width for the core-services bento grid — see the
+ * `span` field on CoreService in src/lib/pricing.ts for why width is the
+ * only thing that varies (never row height). */
+const spanClass: Record<CoreService["span"], string> = {
+  full: "sm:col-span-2 lg:col-span-6",
+  half: "sm:col-span-2 lg:col-span-3",
+  third: "sm:col-span-1 lg:col-span-2",
+};
 
 /** Shared setup/monthly stat block used on both service and bundle cards. */
 function PriceStats({
@@ -49,6 +65,84 @@ function PriceStats({
   );
 }
 
+function ServiceCard({ service }: { service: CoreService }) {
+  const { ref, onPointerMove } = useSpotlight<HTMLElement>();
+
+  return (
+    <article
+      ref={ref}
+      onPointerMove={onPointerMove}
+      className={[
+        "group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line",
+        "bg-linear-to-b from-white/8 to-white/2 p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover",
+        spanClass[service.span],
+      ].join(" ")}
+    >
+      <Spotlight />
+      <h4 className="text-lg font-semibold tracking-[-0.01em]">
+        {service.name}
+      </h4>
+      <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-muted">
+        {service.description}
+      </p>
+
+      <PriceStats
+        setup={service.setup}
+        monthly={service.monthly}
+        monthlyNote={service.monthlyNote}
+      />
+    </article>
+  );
+}
+
+function BundleCard({ bundle }: { bundle: Bundle }) {
+  const { ref, onPointerMove } = useSpotlight<HTMLElement>();
+
+  return (
+    <article
+      ref={ref}
+      onPointerMove={onPointerMove}
+      className="group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover md:p-8"
+    >
+      <Spotlight />
+      <h4 className="text-xl font-semibold tracking-[-0.02em]">
+        {bundle.name}
+      </h4>
+      <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-muted">
+        {bundle.description}
+      </p>
+
+      <ul className="mt-5 flex flex-wrap gap-2">
+        {bundle.includes.map((item) => (
+          <li
+            key={item}
+            className="rounded-full border border-line px-3 py-1 font-mono text-[11px] tracking-[0.04em] text-subtle"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <PriceStats
+        setup={bundle.setup}
+        monthly={bundle.monthly}
+        monthlyNote={bundle.monthlyNote}
+      />
+
+      {bundle.savings && (
+        <p className="mt-4 text-[13px] font-medium text-foreground">
+          {bundle.savings}
+        </p>
+      )}
+    </article>
+  );
+}
+
+/**
+ * Client component (unlike the section it most resembles structurally,
+ * About) because every service and bundle card carries the mouse-tracking
+ * spotlight glow via `useSpotlight`.
+ */
 export function Pricing() {
   return (
     <section
@@ -59,9 +153,7 @@ export function Pricing() {
       <Reveal>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
-              Pricing
-            </span>
+            <Eyebrow>Pricing</Eyebrow>
             <h2 className="mt-6 max-w-[20ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] md:text-5xl">
               Every service, priced up front.
             </h2>
@@ -85,7 +177,7 @@ export function Pricing() {
         </p>
       </Reveal>
 
-      {/* ── Core services ─────────────────────────────────────────────── */}
+      {/* ── Core services — asymmetric bento grid ────────────────────── */}
       <Reveal delay={0.08} className="mt-20 md:mt-24">
         <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
           Core Services
@@ -94,25 +186,9 @@ export function Pricing() {
           Pick what you need
         </h3>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-16 md:gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-16 md:gap-6 lg:grid-cols-6">
           {coreServices.map((service) => (
-            <article
-              key={service.id}
-              className="flex flex-col rounded-3xl border border-line bg-surface p-6 transition-colors duration-300 hover:border-line-strong"
-            >
-              <h4 className="text-lg font-semibold tracking-[-0.01em]">
-                {service.name}
-              </h4>
-              <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-muted">
-                {service.description}
-              </p>
-
-              <PriceStats
-                setup={service.setup}
-                monthly={service.monthly}
-                monthlyNote={service.monthlyNote}
-              />
-            </article>
+            <ServiceCard key={service.id} service={service} />
           ))}
         </div>
       </Reveal>
@@ -132,40 +208,7 @@ export function Pricing() {
 
         <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:gap-6 lg:grid-cols-2">
           {bundles.map((bundle) => (
-            <article
-              key={bundle.id}
-              className="flex flex-col rounded-3xl border border-line bg-surface p-6 transition-colors duration-300 hover:border-line-strong md:p-8"
-            >
-              <h4 className="text-xl font-semibold tracking-[-0.02em]">
-                {bundle.name}
-              </h4>
-              <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-muted">
-                {bundle.description}
-              </p>
-
-              <ul className="mt-5 flex flex-wrap gap-2">
-                {bundle.includes.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full border border-line px-3 py-1 font-mono text-[11px] tracking-[0.04em] text-subtle"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <PriceStats
-                setup={bundle.setup}
-                monthly={bundle.monthly}
-                monthlyNote={bundle.monthlyNote}
-              />
-
-              {bundle.savings && (
-                <p className="mt-4 text-[13px] font-medium text-foreground">
-                  {bundle.savings}
-                </p>
-              )}
-            </article>
+            <BundleCard key={bundle.id} bundle={bundle} />
           ))}
         </div>
       </Reveal>
@@ -183,7 +226,7 @@ export function Pricing() {
             Extend any service
           </h3>
 
-          <div className="mt-6 rounded-3xl border border-line bg-surface p-2">
+          <div className="mt-6 rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card">
             <ul className="divide-y divide-line">
               {addOns.map((addOn) => (
                 <li

@@ -5,26 +5,33 @@ import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import type { Project } from "@/lib/projects";
 import { HOVER_SPRING, staggerItem } from "@/lib/motion";
+import { useSpotlight } from "@/lib/use-spotlight";
+import { Spotlight } from "@/components/ui/spotlight";
 
 export function ProjectCard({ project }: { project: Project }) {
   const reduce = useReducedMotion();
+  const { ref, onPointerMove } = useSpotlight<HTMLElement>();
 
   return (
     <motion.article
+      ref={ref}
+      onPointerMove={onPointerMove}
       variants={staggerItem}
       whileHover={reduce ? undefined : { y: -6 }}
       transition={HOVER_SPRING}
       className={[
-        "group relative overflow-hidden rounded-3xl border border-line bg-surface",
-        "p-2 transition-colors duration-300 hover:border-line-strong",
-        "hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)]",
+        "group/spot group relative isolate overflow-hidden rounded-2xl border border-line",
+        "bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card",
+        "transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-card-hover",
         project.wide ? "md:col-span-2" : "",
       ].join(" ")}
     >
+      <Spotlight />
+
       {/* ── Preview image ────────────────────────────────────────────── */}
       <div
         className={[
-          "relative w-full overflow-hidden rounded-2xl bg-surface-hover",
+          "relative w-full overflow-hidden rounded-xl bg-surface-hover",
           project.wide ? "aspect-[16/7]" : "aspect-[16/10]",
         ].join(" ")}
       >
