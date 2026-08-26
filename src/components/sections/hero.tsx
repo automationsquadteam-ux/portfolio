@@ -51,11 +51,10 @@ export function Hero() {
             variants={staggerItem}
             className="mt-6 max-w-[18ch] bg-linear-to-b from-foreground via-foreground/95 to-foreground/70 bg-clip-text text-[2.75rem] leading-[1.03] font-semibold tracking-[-0.035em] text-balance text-transparent sm:text-6xl lg:text-7xl xl:text-[5.25rem]"
           >
-            We Build Websites,{" "}
+            We Build Websites, Automations &amp;{" "}
             <span className="bg-linear-to-r from-accent via-blue-300 to-accent bg-size-[200%_auto] bg-position-[0%_center] bg-clip-text text-transparent animate-[text-shimmer_4s_linear_infinite]">
-              AI Automations
-            </span>{" "}
-            &amp; Chatbots
+              AI Agents
+            </span>
           </motion.h1>
 
           <motion.p

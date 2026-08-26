@@ -53,7 +53,7 @@ export function StructuredData() {
         serviceType: [
           "Website development",
           "AI automation development",
-          "Chatbot development",
+          "AI agent development",
           "Custom software development",
         ],
       },

@@ -66,7 +66,7 @@ export function Pipeline() {
           <p className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-muted md:text-base">
             We run our own outreach on a pipeline we built. Every lead moves
             through the statuses below, and the dashboard reads straight from
-            it — no screenshots, no edited numbers.
+            it, with no screenshots and no edited numbers.
           </p>
 
           <a
@@ -77,7 +77,7 @@ export function Pipeline() {
           >
             View the dashboard
             <ArrowUpRight className="size-4" aria-hidden="true" />
-            <span className="sr-only">— opens in a new tab</span>
+            <span className="sr-only">(opens in a new tab)</span>
           </a>
         </Reveal>
 

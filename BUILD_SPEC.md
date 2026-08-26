@@ -27,6 +27,7 @@ now including scroll-linked parallax on the hero.
 | §7.14 Lead pipeline section (added 2026-08-05) | ✅ Built — lint + build re-run clean, `/` still static |
 | §7.15 Pricing section + rate-card PDF download (added 2026-08-22) | ✅ Built — lint + build re-run clean, `/` still static, PDF serves `200 application/pdf` |
 | §3.6 / §7.16 "Deep space with ambient light" redesign (added 2026-08-26) | ✅ Built — every section restyled, hamburger mobile menu added, lint + build re-run clean, `/` still static |
+| §7.17 Copy pass: no em dashes, "chatbot" → "AI agent" (added 2026-08-26) | ✅ Built — lint + build re-run clean, `/` still static, verified no stale "chatbot"/em-dash text in rendered HTML. ⬜ PDF rate card not regenerated — see §7.17's follow-up note |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -528,8 +529,8 @@ what the page actually looks like now, see §3.6.
 │   CRM connection +$100  │  Every project starts with a short call…   │
 │   Anything else — call  │                                            │
 ├──────────────────────────────────────────────────────────────────────┤ id="about"
-│   ABOUT   │  We are a company focused on building AI automations,    │
-│  (3 cols) │  intelligent chatbots, and modern web applications…      │
+│   ABOUT   │  We are a software house focused on building websites,   │
+│  (3 cols) │  AI automations, AI agents, and modern web applications… │
 │           │  (9 cols, large statement type)                          │
 ├──────────────────────────────────────────────────────────────────────┤ id="contact"
 │   ╭────────────────────────────────────────────────────────────────╮ │
@@ -556,15 +557,23 @@ Type these strings **character for character**. No "improvements", no extra adje
 - Button: `Let's talk` → `#contact`
 
 ### Hero
-- Eyebrow: `AI AUTOMATION · FULL-STACK DEVELOPMENT`
-- H1: `We Build AI Automations & Modern Web Applications`
-- Paragraph: `Helping businesses automate workflows, build AI tools, and create fast, scalable web applications.`
+
+> Copy below reflects the live `hero.tsx` / `site.ts` as of 2026-08-26 (eyebrow and H1
+> had already drifted from this table before that date — the "AI automation, chatbots"
+> framing was replaced with "software house, AI agents" at some point outside a tracked
+> BUILD_SPEC update; the 2026-08-26 pass additionally dropped "chatbots" for "AI agents"
+> sitewide and removed em dashes from user-facing copy — see §7.17).
+
+- Eyebrow: `Software House · AI Automations · Web Development`
+- H1: `We Build Websites, Automations & AI Agents` — the accent gradient shimmer (§3.2)
+  wraps only `AI Agents`, the last phrase, not the whole line.
+- Paragraph: `We are a software house helping businesses automate workflows, launch websites, and build AI tools that are fast, scalable, and conversion-focused.`
 - Primary button: `View Projects` (+ `ArrowRight` icon) → `#projects`
 - Secondary button: `Contact Me` → `#contact`
 
 ### Projects section
 - H2: `Featured Projects`
-- Right-side meta: `SELECTED WORK — 03`
+- Right-side meta: `Selected Work · 03`
 
 Cards render in the order below. The lead card is full-width; the other two sit side by side
 beneath it. `index` and `badge` are **positional labels** — if the order ever changes, renumber
@@ -617,7 +626,7 @@ them so they still read 01 → 02 → 03 down the page.
 
 - Eyebrow: `LIVE DASHBOARD`
 - H2: `Our lead engine, in the open.`
-- Paragraph: `We run our own outreach on a pipeline we built. Every lead moves through the statuses below, and the dashboard reads straight from it — no screenshots, no edited numbers.`
+- Paragraph: `We run our own outreach on a pipeline we built. Every lead moves through the statuses below, and the dashboard reads straight from it, with no screenshots and no edited numbers.`
 - Primary button: `View the dashboard` (+ `ArrowUpRight`) → `https://leads-website-alpha.vercel.app/`, new tab
 - Card header: the bare host `leads-website-alpha.vercel.app`, and a `LIVE` pill with an accent dot
 - Card footer: `Counts update on the dashboard. Lead identities and contact details are never published.`
@@ -648,13 +657,15 @@ through sees the same words. If the dashboard renames a status, rename it here t
 ### Pricing (added 2026-08-22)
 
 Source of truth: `public/Automation_Squad_Rate_Card.pdf` ("Updated August 2026"). Every
-number and description below is transcribed from that PDF verbatim — do not paraphrase the
-descriptions or round the figures. If the rate card changes, update the PDF, `src/lib/pricing.ts`
-and this table together; they must never disagree.
+**number** below is transcribed from that PDF verbatim and must never drift from it. As of
+2026-08-26, the **wording** is a deliberate, narrow exception: the PDF still says
+"chatbot" in three places and this table (and `src/lib/pricing.ts`) now says "AI agent"
+instead, per a sitewide rewording — see §7.17. The PDF has not been regenerated to match;
+regenerate it from this table (or tell the site to go back to "chatbot") to close the gap.
 
 - Eyebrow: `PRICING`
 - H2: `Every service, priced up front.`
-- Intro paragraph (verbatim from the PDF): `We build the systems small businesses actually need to stop losing customers to slow replies: websites, chatbots, voice receptionists, and the automation connecting them. Every service has two costs, a one-time setup fee for the build, and a small monthly fee for hosting, API usage, and upkeep. Combine services into a bundle and the monthly fee drops.`
+- Intro paragraph (adapted from the PDF — "chatbots" → "AI agents", see the note above): `We build the systems small businesses actually need to stop losing customers to slow replies: websites, AI agents, voice receptionists, and the automation connecting them. Every service has two costs, a one-time setup fee for the build, and a small monthly fee for hosting, API usage, and upkeep. Combine services into a bundle and the monthly fee drops.`
 - Meta line: `Updated August 2026`
 - Download button: `Download rate card` (+ `Download` icon) → downloads `public/Automation_Squad_Rate_Card.pdf` as `Automation-Squad-Rate-Card.pdf` (uses the HTML `download` attribute, **not** `target="_blank"` — it saves a file, it does not navigate)
 
@@ -663,7 +674,7 @@ and this table together; they must never disagree.
 | Service | Description | Setup | Monthly |
 | --- | --- | --- | --- |
 | `Business Website` | `A responsive website built to convert visitors into contacts: a booking or quote form, WhatsApp button, Google Maps, and basic SEO included.` | `$250` | `$20` |
-| `AI Customer Assistant` | `A chatbot trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.` | `$275` | `$50` |
+| `AI Customer Assistant` | `An AI agent trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.` | `$275` | `$50` |
 | `AI Voice Receptionist` | `Answers your business line day and night, understands what the caller wants, and books the appointment directly into your calendar.` | `$475` | `$85` `+usage` |
 | `Lead Generation System` | `Finds businesses matching your ideal customer, pulls their contact details, and loads them into a dashboard ranked by fit.` | `$650` | `$80` |
 | `Automated Lead Follow-Up` | `Every new lead gets an instant reply, then a scheduled follow-up sequence over the next two weeks until they respond.` | `$375` | `$45` |
@@ -676,13 +687,13 @@ and this table together; they must never disagree.
 | `Foundation` | `For businesses that just need a professional site and a way for people to reach them.` | Business Website | `$250` | `$20` | *(none — single service)* |
 | `Growth` | `Turns the website into something that works while you're not looking: answering questions and capturing leads on its own.` | Business Website, AI Customer Assistant | `$450` | `$60` | `Save $75 on setup and $10 a month versus buying separately.` |
 | `Sales Automation` | `Brings in new customers and makes sure none of them go cold waiting for a reply.` | Business Website, Lead Generation System, Automated Lead Follow-Up | `$1,050` | `$120` | `Save $225 on setup and $25 a month versus buying separately.` |
-| `Full System` | `Every service running together: website, chatbot, voice receptionist, lead generation, follow-up, and reputation management.` | all six core services | `$1,950` | `$280` `+usage` | `Save $450 on setup and $40 a month versus buying separately.` |
+| `Full System` | `Every service running together: website, AI agent, voice receptionist, lead generation, follow-up, and reputation management.` | all six core services | `$1,950` | `$280` `+usage` | `Save $450 on setup and $40 a month versus buying separately.` |
 
 **Add-ons** — eyebrow `ADD-ONS`, H3 `Extend any service`. A three-row list:
 
 | Add-on | Price |
 | --- | --- |
-| `Extra language for the chatbot or voice assistant` | `+$75 setup, +$10/mo` |
+| `Extra language for the AI agent or voice assistant` | `+$75 setup, +$10/mo` |
 | `Connecting to a CRM or spreadsheet you already use` | `+$100 setup` |
 | `Anything outside the services above` | `Quoted after a short call` |
 
@@ -695,7 +706,7 @@ and this table together; they must never disagree.
 
 ### About
 - Label: `ABOUT`
-- Paragraph: `We are a company focused on building AI automations, intelligent chatbots, and modern web applications. We create software that saves businesses time through automation while delivering polished user experiences.`
+- Paragraph: `We are a software house focused on building websites, AI automations, AI agents, and modern web applications. We create software that saves businesses time through automation while delivering polished user experiences.`
 
 ### Contact
 - H2: `Have a project in mind? Let's build something together.`
@@ -714,7 +725,7 @@ Address:  send@team-automationsolutions.me
 
 Primary "Email" button  -> Gmail web compose, new tab:
   https://mail.google.com/mail/?view=cm&fs=1&to=send%40team-automationsolutions.me
-    &su=Project%20enquiry%20—%20Automation%20Squad
+    &su=Project%20enquiry%20for%20Automation%20Squad
     &body=Hi%20Automation%20Squad%2C%0A%0AI%27d%20like%20to%20talk%20about%3A%0A
 
 Fallback text link      -> mailto:send@team-automationsolutions.me?subject=Project%20enquiry
@@ -2050,6 +2061,45 @@ Notes for whoever edits this next:
 - **`bg-linear-to-*`, not `bg-gradient-to-*`**, in every new gradient this redesign added
   — Tailwind v4's canonical name (§3.2). The two are equivalent; don't mix spellings in
   new code.
+
+### 7.17 — Copy pass: drop em dashes, "chatbot" → "AI agent" (added 2026-08-26)  ✅ DONE
+
+A content-only pass, no layout or component-structure changes. Two rules, applied to every
+string a visitor actually reads or hears (headings, paragraphs, buttons, meta title/
+description, JSON-LD, `sr-only` accessibility text, the Gmail subject line) —
+**not** to code comments, which aren't user-facing and were left alone:
+
+1. **No em dashes (`—`) in user-facing copy.** Each one was rewritten with ordinary
+   punctuation or restructured phrasing, not swapped for an en dash or a literal `--`.
+   Where the site already had a separator convention (the eyebrow's `·` middot, e.g.
+   `Software House · AI Automations · Web Development`), new separators reused it instead
+   of inventing another one — see the Hero title, `Selected Work · 03`, and the page
+   `<title>` template (`%s · Automation Squad`) in §5.
+2. **"Chatbot" → "AI agent" everywhere**, including the Pricing section's PDF-sourced
+   copy (§7.15's "transcribe verbatim" rule now has a narrow, explicit exception for this
+   one term — see the note at the top of the Pricing block in §5 and the doc comment at
+   the top of `lib/pricing.ts`). The PDF itself was not regenerated; it still says
+   "chatbot" in three places. **Follow-up owed:** either regenerate
+   `Automation_Squad_Rate_Card.pdf` with the new wording, or explicitly decide the PDF
+   stays as-is and the site is allowed to diverge from it on wording (never on numbers).
+
+**Where the headline needed more than a find-replace.** The Hero H1 was
+`We Build Websites, AI Automations & Chatbots` — a literal swap would have produced
+`AI Automations & AI Agents`, repeating "AI" back-to-back in a five-word headline. It was
+restructured instead: `We Build Websites, Automations & AI Agents`, dropping the now-
+redundant "AI" off "Automations" since "AI Agents" already carries the AI framing. The
+accent gradient shimmer (§3.2) moved with it — it now wraps `AI Agents` (the term the
+site is meant to foreground) instead of the old `AI Automations`. `site.title` got the
+same tightening for the same reason.
+
+**§5 sync note.** Several exact-copy entries in §5 (Hero's eyebrow/H1, the Projects meta
+line) had already drifted from an earlier, untracked edit before this pass touched them —
+the *previous* copy in §5 didn't match live `hero.tsx` even before today's changes. §5 now
+reflects what's actually live. The large embedded code listings elsewhere in §7 (§7.3,
+§7.8, §7.10, etc.) were **not** re-synced to match every subsequent redesign and copy
+pass — treat this document's §5 as the current copy reference, and the older component
+code blocks in §7 as historical/approximate rather than byte-exact. A full re-sync of
+those listings is a separate, larger task nobody has asked for yet.
 
 ---
 

@@ -1,7 +1,13 @@
 /**
  * Source of truth: public/Automation_Squad_Rate_Card.pdf ("Updated August 2026").
- * Every number and description below is copied from that PDF. If the rate card
- * changes, update both — this file and the PDF should never disagree.
+ * Every number below is copied from that PDF and must never drift from it.
+ *
+ * One deliberate exception on wording: the PDF still says "chatbot" in three
+ * places (the AI Customer Assistant description, the Full System bundle
+ * description, and one add-on name). This file says "AI agent" instead,
+ * per an explicit 2026-08-26 site-wide rewording. The PDF has not been
+ * regenerated to match — see BUILD_SPEC.md's note on this file for the
+ * follow-up.
  */
 
 export type CoreService = {
@@ -35,7 +41,7 @@ export const coreServices: CoreService[] = [
     id: "assistant",
     name: "AI Customer Assistant",
     description:
-      "A chatbot trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.",
+      "An AI agent trained on your services, pricing, and FAQs. It answers questions, collects a name and number, and sends qualified leads straight to you.",
     setup: 275,
     monthly: 50,
     span: "half",
@@ -130,7 +136,7 @@ export const bundles: Bundle[] = [
     id: "full-system",
     name: "Full System",
     description:
-      "Every service running together: website, chatbot, voice receptionist, lead generation, follow-up, and reputation management.",
+      "Every service running together: website, AI agent, voice receptionist, lead generation, follow-up, and reputation management.",
     includes: [
       "Business Website",
       "AI Customer Assistant",
@@ -155,7 +161,7 @@ export type AddOn = {
 export const addOns: AddOn[] = [
   {
     id: "language",
-    name: "Extra language for the chatbot or voice assistant",
+    name: "Extra language for the AI agent or voice assistant",
     price: "+$75 setup, +$10/mo",
   },
   {
@@ -173,7 +179,7 @@ export const addOns: AddOn[] = [
 export const pricingUpdated = "August 2026";
 
 export const pricingIntro =
-  "We build the systems small businesses actually need to stop losing customers to slow replies: websites, chatbots, voice receptionists, and the automation connecting them. Every service has two costs, a one-time setup fee for the build, and a small monthly fee for hosting, API usage, and upkeep. Combine services into a bundle and the monthly fee drops.";
+  "We build the systems small businesses actually need to stop losing customers to slow replies: websites, AI agents, voice receptionists, and the automation connecting them. Every service has two costs, a one-time setup fee for the build, and a small monthly fee for hosting, API usage, and upkeep. Combine services into a bundle and the monthly fee drops.";
 
 export const pricingHowWeWork =
   "Every project starts with a short call about what you actually need. Scope and the setup fee are confirmed before any work begins, so there are no surprises on the invoice. Single-service builds are typically live within one to two weeks; bundles take two to four depending on scope.";

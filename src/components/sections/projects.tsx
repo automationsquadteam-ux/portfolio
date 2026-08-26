@@ -18,7 +18,7 @@ export function Projects() {
             Featured Projects
           </h2>
           <span className="font-mono text-[11px] tracking-[0.18em] text-subtle uppercase">
-            Selected Work — 03
+            Selected Work · 03
           </span>
         </div>
       </Reveal>

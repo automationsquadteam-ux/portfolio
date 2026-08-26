@@ -89,7 +89,7 @@ export function ProjectCard({ project }: { project: Project }) {
             className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             aria-hidden="true"
           />
-          <span className="sr-only">— {project.title}, opens in a new tab</span>
+          <span className="sr-only">({project.title}, opens in a new tab)</span>
         </a>
       </div>
     </motion.article>

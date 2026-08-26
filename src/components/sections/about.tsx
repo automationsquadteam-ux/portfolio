@@ -15,9 +15,9 @@ export function About() {
         <Reveal delay={0.08} className="md:col-span-9">
           <p className="max-w-[52ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-xl leading-[1.45] tracking-[-0.015em] text-transparent md:text-2xl lg:text-[1.75rem]">
             We are a software house focused on building websites, AI
-            automations, intelligent chatbots, and modern web applications. We
-            create software that saves businesses time through automation
-            while delivering polished user experiences.
+            automations, AI agents, and modern web applications. We create
+            software that saves businesses time through automation while
+            delivering polished user experiences.
           </p>
         </Reveal>
       </div>

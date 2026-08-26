@@ -5,11 +5,11 @@ export const site = {
   domain: "team-automationsolutions.me",
   email: "send@team-automationsolutions.me",
   eyebrow: "Software House · AI Automations · Web Development",
-  title: "Automation Squad — Websites, AI Automations & Chatbots",
+  title: "Automation Squad · Websites, Automations & AI Agents",
   description:
-    "Automation Squad is a software house that builds websites, AI automations, chatbots, and custom web applications for growing businesses.",
+    "Automation Squad is a software house that builds websites, AI automations, AI agents, and custom web applications for growing businesses.",
   about:
-    "Automation Squad builds websites, AI automations, chatbots, and modern web applications that save businesses time while delivering polished user experiences.",
+    "Automation Squad builds websites, AI automations, AI agents, and modern web applications that save businesses time while delivering polished user experiences.",
 } as const;
 
 /** Mutable copy — Next's Metadata type does not accept a readonly array. */
@@ -21,9 +21,8 @@ export const keywords: string[] = [
   "AI automation",
   "AI automation services",
   "workflow automation",
-  "AI chatbots",
-  "chatbot development",
   "AI agents",
+  "AI agent development",
   "full-stack development",
   "web application development",
   "Next.js development",
@@ -34,7 +33,7 @@ export const keywords: string[] = [
   "Automation Squad",
 ];
 
-const SUBJECT = "Project enquiry — Automation Squad";
+const SUBJECT = "Project enquiry for Automation Squad";
 const BODY = "Hi Automation Squad,\n\nI'd like to talk about:\n";
 
 /** Opens the Gmail web composer, pre-filled. Use with target="_blank". */
