@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { keywords, site } from "@/lib/site";
-import { AmbientBackground } from "@/components/ui/ambient-background";
+import { BackgroundVideo } from "@/components/ui/background-video";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { StructuredData } from "@/components/structured-data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -78,9 +81,25 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        {/* The theme face is fetched from a third-party host via @import in
+            globals.css; warming the connection early shortens the swap. */}
+        <link rel="preconnect" href="https://db.onlinewebfonts.com" />
+        <link
+          rel="preconnect"
+          href="https://d8j0ntlcm91z4.cloudfront.net"
+          crossOrigin=""
+        />
+      </head>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <AmbientBackground />
-        {children}
+        <StructuredData />
+        <BackgroundVideo />
+        {/* Header, footer and the video live outside {children} so they are
+            not inside template.tsx — they persist across navigations instead
+            of remounting and replaying their entrance on every route change. */}
+        <SiteHeader />
+        <main className="pt-16 md:pt-18">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );

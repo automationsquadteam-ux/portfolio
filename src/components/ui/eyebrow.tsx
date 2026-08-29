@@ -9,13 +9,22 @@ import type { ReactNode } from "react";
  *
  * Hero renders its own equivalent markup directly on a `motion.span`
  * instead of using this component, since its eyebrow needs to participate
- * in the hero's stagger-entrance `variants` — everywhere else, this is the
- * one place that markup lives.
+ * in the hero's staggered entrance — if you ever touch the pill's visual
+ * design, change both places.
+ *
+ * `as` exists for the About page, where this label is the page's only
+ * heading and therefore has to be the `h1`.
  */
-export function Eyebrow({ children }: { children: ReactNode }) {
+export function Eyebrow({
+  children,
+  as: Tag = "span",
+}: {
+  children: ReactNode;
+  as?: "span" | "h1" | "h2";
+}) {
   return (
-    <span className="inline-flex items-center rounded-full border border-accent/30 bg-surface px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
+    <Tag className="inline-flex items-center rounded-full border border-accent/30 bg-surface px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase backdrop-blur-md">
       {children}
-    </span>
+    </Tag>
   );
 }

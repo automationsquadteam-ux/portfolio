@@ -19,19 +19,19 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 pb-24 md:px-8 md:pb-32 lg:px-10 lg:pb-40"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
     >
       <Reveal>
         <div
           ref={ref}
           onPointerMove={onPointerMove}
-          className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 px-8 py-14 shadow-card md:px-14 md:py-20 lg:px-20 lg:py-24"
+          className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 px-8 py-14 shadow-card backdrop-blur-xl md:px-14 md:py-20 lg:px-20 lg:py-24"
         >
           <Spotlight />
 
-          <h2 className="max-w-[18ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-transparent md:text-5xl lg:text-[3.5rem]">
+          <h1 className="max-w-[18ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-transparent md:text-5xl lg:text-[3.5rem]">
             Have a project in mind? Let&apos;s build something together.
-          </h2>
+          </h1>
 
           <div className="mt-10 flex flex-wrap items-center gap-3 md:mt-12">
             <a

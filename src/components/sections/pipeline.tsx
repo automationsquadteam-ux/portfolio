@@ -52,16 +52,16 @@ export function Pipeline() {
   return (
     <section
       id="pipeline"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 border-t border-line px-6 py-24 md:px-8 md:py-32 lg:px-10"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 md:px-8 md:py-32 lg:px-10"
     >
       <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-6">
         {/* ── Left: the pitch ──────────────────────────────────────────── */}
         <Reveal className="md:col-span-5">
           <Eyebrow>Live Dashboard</Eyebrow>
 
-          <h2 className="mt-6 max-w-[16ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:text-5xl">
+          <h1 className="mt-6 max-w-[16ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-transparent md:text-5xl">
             Our lead engine, in the open.
-          </h2>
+          </h1>
 
           <p className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-muted md:text-base">
             We run our own outreach on a pipeline we built. Every lead moves
@@ -86,7 +86,7 @@ export function Pipeline() {
           <div
             ref={ref}
             onPointerMove={onPointerMove}
-            className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card transition-shadow duration-300 hover:shadow-card-hover"
+            className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 p-2 shadow-card backdrop-blur-xl transition-shadow duration-300 hover:shadow-card-hover"
           >
             <Spotlight />
 
@@ -94,7 +94,7 @@ export function Pipeline() {
               <span className="truncate font-mono text-[11px] tracking-[0.04em] text-subtle">
                 {leadsDashboard.host}
               </span>
-              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-background px-2.5 py-1 font-mono text-[10px] font-medium tracking-[0.14em] text-subtle uppercase">
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-background/60 px-2.5 py-1 font-mono text-[10px] font-medium tracking-[0.14em] text-subtle uppercase">
                 <span
                   aria-hidden="true"
                   className="size-1.5 animate-pulse rounded-full bg-accent"
@@ -103,7 +103,7 @@ export function Pipeline() {
               </span>
             </div>
 
-            <ul className="rounded-xl border border-line bg-background p-1.5">
+            <ul className="rounded-xl border border-line bg-background/45 p-1.5">
               {stages.map((stage) => (
                 <li
                   key={stage.index}

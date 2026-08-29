@@ -14,9 +14,9 @@ export function Projects() {
     >
       <Reveal>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="text-4xl leading-[1.08] font-semibold tracking-[-0.03em] md:text-5xl">
+          <h1 className="bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-transparent md:text-5xl">
             Featured Projects
-          </h2>
+          </h1>
           <span className="font-mono text-[11px] tracking-[0.18em] text-subtle uppercase">
             Selected Work · 03
           </span>

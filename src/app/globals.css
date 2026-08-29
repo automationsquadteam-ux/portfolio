@@ -1,23 +1,40 @@
+/* Must stay the very first rule in this file. `@import "tailwindcss"` below is
+   inlined and expanded at build time, so anything after it is no longer at the
+   top of the stylesheet — a remote @import placed below it is invalid CSS and
+   Lightning CSS warns on the build. */
+@import url("https://db.onlinewebfonts.com/c/e66905e07608167a84e6ad52f638c3c6?family=Helvetica+Now+Var");
 @import "tailwindcss";
 
-/* ───────────────── Raw palette — deep space with ambient light ───────────── */
-/* Near-black base + a single accent (brand blue, not Linear's stock indigo —
-   see BUILD_SPEC.md §3.1 for why the accent stays tied to the logo). Surfaces
-   and borders are translucent white so the ambient background (globals below,
-   rendered in <AmbientBackground>) shows softly through every card. */
+/* ───────────────── Raw palette — white-on-video ──────────────────────────── */
+/* The page has no opaque background of its own. A fixed <BackgroundVideo>
+   sits behind everything (see ui/background-video.tsx) and every section is
+   transparent so it shows through. Surfaces and borders are translucent
+   white; text is white at descending opacities rather than grey hex values,
+   so it reads against moving footage instead of against a fixed dark ground.
+
+   Contrast is guaranteed by the scrim inside BackgroundVideo, not by luck:
+   at its lightest the scrim is 75% #050506, so even a pure-white video frame
+   composites to ~#373737. White then measures ~8.9:1, --muted ~7:1 and
+   --subtle ~4.6:1. Lowering the scrim breaks those figures — see BUILD_SPEC
+   §3.7 before touching it. */
 :root {
   color-scheme: dark;
 
+  /* Painted behind the video: covers the moment before it decodes, and is
+     the permanent fallback if it never loads (blocked, save-data, error). */
   --background: #050506;
   --background-deep: #020203;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-hover: rgba(255, 255, 255, 0.08);
-  --line: rgba(255, 255, 255, 0.06);
-  --line-strong: rgba(255, 255, 255, 0.1);
 
-  --foreground: #ededef;
-  --muted: #8a8f98;
-  --subtle: #71717a;
+  /* Glass. Heavier than a flat-dark theme would need — a 5% white panel is
+     invisible over video, and these also carry backdrop-blur at the call site. */
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-hover: rgba(255, 255, 255, 0.1);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  --foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.85);
+  --subtle: rgba(255, 255, 255, 0.62);
 
   --accent: #3b82f6;
   --accent-solid: #2563eb;
@@ -49,7 +66,14 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-fg: var(--accent-fg);
 
-  --font-sans: var(--font-geist-sans);
+  /* Helvetica Now Var is the theme face (imported above). Geist stays as the
+     first fallback — it was the previous theme's font and is already
+     self-hosted by next/font, so a failed remote fetch degrades to it rather
+     than to Arial. Mono is untouched: the eyebrow / tag / badge labels are
+     part of the existing design and stay Geist Mono. */
+  --font-sans:
+    "Helvetica Now Var", var(--font-geist-sans), "Helvetica Neue", Helvetica,
+    Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
 
   /* ── Centralized multi-layer shadow/glow tokens ─────────────────────────
@@ -101,33 +125,21 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--background-deep);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--line-strong);
   border-radius: 999px;
-  border: 3px solid var(--background);
+  border: 3px solid var(--background-deep);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: rgba(255, 255, 255, 0.28);
 }
 
-/* ───────────────── Ambient background motion (AmbientBackground) ─────────── */
-/* Large blurred blobs float slowly to simulate cinematic light pools. Kept in
-   plain CSS (not @theme) since it's an animation, not a design token. */
-@keyframes blob-float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(1deg);
-  }
-}
-
-/* Shimmer sweep for gradient-accent text (see Hero). background-position
-   isn't a compositor property like transform/opacity, but the element it
-   runs on is a few words of text — the repaint cost is negligible. */
+/* ───────────────────────────── Text shimmer ──────────────────────────────── */
+/* Shimmer sweep for the one gradient-accent phrase in the hero headline.
+   background-position isn't a compositor property like transform/opacity, but
+   the element it runs on is two words of text — the repaint cost is negligible. */
 @keyframes text-shimmer {
   to {
     background-position: 200% center;

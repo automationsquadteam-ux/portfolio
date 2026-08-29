@@ -8,8 +8,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: site.description,
     start_url: "/",
     display: "standalone",
-    background_color: "#0A0A0A",
-    theme_color: "#0A0A0A",
+    // Must track --background / viewport.themeColor in globals.css + layout.tsx.
+    background_color: "#050506",
+    theme_color: "#050506",
     categories: ["business", "productivity", "developer"],
     icons: [
       {

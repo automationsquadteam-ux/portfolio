@@ -2,17 +2,19 @@
 
 **Read this whole file before you write a single line of code.**
 
-You are building a **one-page, dark-mode, premium-minimal portfolio site** for
+You are building a **multi-page, dark-mode, premium-minimal portfolio site** for
 **Automation Squad**, an AI-automation & full-stack development studio.
 
-Reference feel: Linear · Vercel · Framer · Stripe — specifically Linear's own
-"deep space with ambient light" language (see §3.6, added 2026-08-26): a near-black
-canvas lit by slow-floating blurred blobs, glass cards that pick up a soft mouse-tracking
-glow, and gradient typography. Monochrome (near-black + white + greys) with **one blue
-accent** — still the brand-linked blue, not Linear's stock indigo (§3.1). Lots of
-whitespace. Rounded cards, softer at 16px than the original 24–32px. Multi-layer glow
-shadows instead of flat borders. Smooth, restrained motion — expo-out easing throughout,
-now including scroll-linked parallax on the hero.
+**Current theme (2026-08-27, §3.7): white-on-video.** A single looping video is fixed
+behind the whole site; every page is transparent and floats over it, held legible by a
+scrim and by glass cards with backdrop blur. Type is Helvetica Now Var, white at
+descending opacities. The **one blue accent** is unchanged and still brand-linked (§3.1).
+
+The card language from the previous "deep space with ambient light" pass survives intact —
+16px radii, multi-layer glow shadows, mouse-tracking spotlights, gradient headline type,
+expo-out easing (§3.2–§3.6). Only the *background layer* changed: the animated gradient
+blobs were replaced by the video. Read §3.7 for what that means before touching the scrim
+or the palette, because the contrast figures in §3.1 depend on both.
 
 ---
 
@@ -28,6 +30,9 @@ now including scroll-linked parallax on the hero.
 | §7.15 Pricing section + rate-card PDF download (added 2026-08-22) | ✅ Built — lint + build re-run clean, `/` still static, PDF serves `200 application/pdf` |
 | §3.6 / §7.16 "Deep space with ambient light" redesign (added 2026-08-26) | ✅ Built — every section restyled, hamburger mobile menu added, lint + build re-run clean, `/` still static |
 | §7.17 Copy pass: no em dashes, "chatbot" → "AI agent" (added 2026-08-26) | ✅ Built — lint + build re-run clean, `/` still static, verified no stale "chatbot"/em-dash text in rendered HTML. ⬜ PDF rate card not regenerated — see §7.17's follow-up note |
+| §3.7 / §7.18 Video-background theme (added 2026-08-27) | ✅ Built — fixed background video + legibility scrim, white-on-video palette, Helvetica Now Var. Replaces the ambient-blob system from §7.16 |
+| §7.19 Multi-page conversion + route transitions (added 2026-08-27) | ✅ Built — 6 routes, all prerendered static, each with one `h1`, its own title/description/canonical. Curtain-wipe page transition via `template.tsx` |
+| §7.20 Generated sitemap (added 2026-08-27) | ✅ Built — `/sitemap.xml` lists all six routes; stale `public/sitemap.xml` that was shadowing it deleted. `robots.ts` needed no change |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -74,7 +79,7 @@ Break any of these and the work is wrong.
 
 | # | Rule |
 | --- | --- |
-| R1 | **One page only.** Everything lives at `/`. Sections are anchors (`#projects`, `#about`, `#contact`). No routing, no sub-pages. |
+| R1 | ~~**One page only.**~~ **SUPERSEDED 2026-08-27 (§7.19).** The site is now **multi-page**: `/` (hero), `/projects`, `/pipeline`, `/pricing`, `/about`, `/contact`. Navigation is `next/link` routing, not hash anchors. The section `id`s (`#projects`, `#about`, …) are kept on the section elements so old inbound links still land somewhere sensible, but they are no longer how the nav works. |
 | R2 | **Dark mode only.** There is no light theme and no theme toggle. Do not write `dark:` variants. |
 | R3 | **Exactly 3 projects.** Anchor Builders, Lumber Wiz, Char Meem Clothing. No more, no fewer. |
 | R4 | **No Tech Stack section.** Tech names appear *only* as small tags inside project cards. This was explicitly cut. |
@@ -130,31 +135,37 @@ portfolio/
 │   │   ├── twitter-image.tsx       §6.3 re-exports the OG card
 │   │   ├── manifest.ts             §6.3 /manifest.webmanifest
 │   │   ├── robots.ts               §6.3 /robots.txt
-│   │   ├── sitemap.ts              §6.3 /sitemap.xml
-│   │   ├── globals.css             §7.1  tokens, shadow tokens (§3.3), blob/shimmer keyframes, reduced motion
-│   │   ├── layout.tsx              §7.2  fonts, full metadata, viewport, renders <AmbientBackground>
-│   │   └── page.tsx                §7.13 composes the components below
+│   │   ├── sitemap.ts              §7.20 /sitemap.xml — all six routes, derived from navLinks
+│   │   ├── globals.css             §7.1  tokens, shadow tokens (§3.3), font @import, shimmer keyframes, reduced motion
+│   │   ├── layout.tsx              §7.2  fonts, metadata, viewport; renders <BackgroundVideo> + header + <main> + footer
+│   │   ├── template.tsx            §7.19 client — the page transition (remounts per route)
+│   │   ├── page.tsx                §7.19 /          → <Hero>
+│   │   ├── projects/page.tsx       §7.19 /projects  → <Projects> + <ProjectsCollectionData>
+│   │   ├── pipeline/page.tsx       §7.19 /pipeline  → <Pipeline>
+│   │   ├── pricing/page.tsx        §7.19 /pricing   → <Pricing>
+│   │   ├── about/page.tsx          §7.19 /about     → <About>
+│   │   └── contact/page.tsx        §7.19 /contact   → <Contact>
 │   ├── components/
-│   │   ├── site-header.tsx         §7.9  client — sticky, frosts on scroll, logo chip, hamburger mobile menu (§7.16)
-│   │   ├── site-footer.tsx         §7.12 server — bg-background-deep
-│   │   ├── structured-data.tsx     §6.3  server — JSON-LD @graph
+│   │   ├── site-header.tsx         §7.9  client — sticky, frosts on scroll, Link nav + active state, hamburger below lg
+│   │   ├── site-footer.tsx         §7.12 server — translucent, carries the full route list
+│   │   ├── structured-data.tsx     §6.3  server — site-wide @graph + <ProjectsCollectionData> (§7.19)
 │   │   ├── sections/
-│   │   │   ├── hero.tsx            §7.10 client — staggered entrance + scroll-linked parallax (§7.16)
+│   │   │   ├── hero.tsx            §7.10 client — full-viewport, per-word staggered headline (§7.18)
 │   │   │   ├── projects.tsx        §7.10 client — stagger container
 │   │   │   ├── pipeline.tsx        §7.14 client — lead dashboard link-out (client since §7.16, for the spotlight card)
 │   │   │   ├── pricing.tsx         §7.15 client — services, bundles, add-ons (client since §7.16, for the spotlight cards)
 │   │   │   ├── about.tsx           §7.10 server
 │   │   │   └── contact.tsx         §7.10 client — client since §7.16, for the spotlight card
 │   │   └── ui/
-│   │       ├── reveal.tsx          §7.6  client — the scroll-reveal primitive
+│   │       ├── reveal.tsx          §7.6  client — the scroll-reveal primitive (absorbed FadeUp's API in §7.18)
 │   │       ├── button.tsx          §7.7  server — buttonClass() + ButtonLink, glow shadow + shine sweep (§7.16)
 │   │       ├── project-card.tsx    §7.8  client — hover lift + image zoom + spotlight (§7.16)
 │   │       ├── copy-email-button.tsx §7.11 client — clipboard + Copied state
-│   │       ├── ambient-background.tsx §3.6/§7.16 server — the 4-layer ambient lighting system
+│   │       ├── background-video.tsx §3.7/§7.18 client — the fixed background video + legibility scrim
 │   │       ├── spotlight.tsx       §3.6/§7.16 — the mouse-tracking glow overlay
 │   │       └── eyebrow.tsx         §3.1/§7.16 server — the shared accent-pill section label
 │   └── lib/
-│       ├── site.ts                 §7.3  name, email, Gmail/mailto URLs, nav links
+│       ├── site.ts                 §7.3  name, email, Gmail/mailto URLs, nav routes + segments
 │       ├── projects.ts             §7.4  the three projects
 │       ├── motion.ts               §7.5  EASE, DURATION, variants
 │       ├── pricing.ts              §7.15 services, bundles, add-ons — mirrors the PDF; `span` field added in §7.16
@@ -218,28 +229,42 @@ This is Next.js **16**, not 13/14/15. Things changed.
 
 ### 3.1 Colour tokens
 
-Dark is the only theme. Surfaces and borders are translucent white now, not flat hex —
-that's what lets the ambient blobs in §3.6 show softly through every card. Contrast
-figures below are computed against the page's darkest realistic point (`#020203`); the
-actual background is a gradient that only gets lighter from there, so real contrast is
-always at least this good.
+> **Revised 2026-08-27 for the video theme (§3.7).** Text is now white at descending
+> opacities rather than grey hex values, and glass is heavier — a 5% white panel that
+> read fine over a static dark canvas is invisible over moving footage.
 
-| Token | Value | Tailwind class | Used for | Contrast |
+Dark is the only theme. Surfaces and borders are translucent white, not flat hex, so the
+background video shows through every card.
+
+**Contrast is guaranteed by the scrim, not by the video.** The figures below are computed
+against the scrim's *lightest* point (75% `#050506`) composited over a worst-case
+pure-white video frame, i.e. `~#373737`. That is the floor: any darker frame only
+improves them. Lowering the scrim opacity in `ui/background-video.tsx` invalidates this
+entire column — re-derive it before you touch that gradient.
+
+| Token | Value | Tailwind class | Used for | Contrast (worst case) |
 | --- | --- | --- | --- | --- |
-| `--background` | `#050506` | `bg-background` | Page canvas (see §3.6 for the full layered system) | — |
-| `--background-deep` | `#020203` | `bg-background-deep` | The one deliberately flat, ambient-light-free surface: the footer | — |
-| `--surface` | `rgba(255,255,255,0.05)` | `bg-surface` | Card backgrounds — translucent so ambient light shows through | — |
-| `--surface-hover` | `rgba(255,255,255,0.08)` | `bg-surface-hover` | Card + button hover | — |
-| `--line` | `rgba(255,255,255,0.06)` | `border-line` | Hairline borders, dividers | — |
-| `--line-strong` | `rgba(255,255,255,0.1)` | `border-line-strong` | Border on hover | — |
-| `--foreground` | `#EDEDEF` | `text-foreground` | Headings, primary text — off-white, never pure `#FFF` | 15.8:1 ✅ |
-| `--muted` | `#8A8F98` | `text-muted` | Body copy, descriptions | 6.3:1 ✅ |
-| `--subtle` | `#71717A` | `text-subtle` | Meta labels, footer, tags | 4.0:1 — **≥14px only** |
-| `--accent` | `#3B82F6` | `text-accent` | Accent **text** on dark (eyebrows, category labels) | 5.1:1 ✅ |
+| `--background` | `#050506` | `bg-background` | Painted behind the video: covers the pre-decode moment, and is the permanent fallback if it never loads | — |
+| `--background-deep` | `#020203` | `bg-background-deep` | Footer ground (at 70% + backdrop blur) and the page-transition curtain | — |
+| `--surface` | `rgba(255,255,255,0.06)` | `bg-surface` | Card backgrounds — translucent so the video shows through | — |
+| `--surface-hover` | `rgba(255,255,255,0.1)` | `bg-surface-hover` | Card + button hover | — |
+| `--line` | `rgba(255,255,255,0.1)` | `border-line` | Hairline borders, dividers | — |
+| `--line-strong` | `rgba(255,255,255,0.18)` | `border-line-strong` | Border on hover | — |
+| `--foreground` | `#FFFFFF` | `text-foreground` | Headings, primary text | ~8.9:1 ✅ |
+| `--muted` | `rgba(255,255,255,0.85)` | `text-muted` | Body copy, descriptions | ~7:1 ✅ |
+| `--subtle` | `rgba(255,255,255,0.62)` | `text-subtle` | Meta labels, footer, tags | ~4.6:1 — **≥14px only** |
+| `--accent` | `#3B82F6` | `text-accent` | Accent **text** (eyebrows, category labels) | 5.1:1 ✅ |
 | `--accent-solid` | `#2563EB` | `bg-accent-solid` | Solid button **fill** (with white text) | 5.0:1 ✅ |
 | `--accent-hover` | `#1D4ED8` | `bg-accent-hover` | Solid button hover fill | ✅ |
 | `--accent-fg` | `#FFFFFF` | `text-accent-fg` | Text on top of accent fill | ✅ |
-| `--accent-glow` | `rgba(59,130,246,0.3)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows, ambient blobs | — |
+| `--accent-glow` | `rgba(59,130,246,0.3)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows | — |
+
+> **Why `--foreground` is now pure `#FFFFFF`.** The earlier passes used `#EDEDEF` and §3.5
+> still lists pure white as an anti-pattern — that rule was written for text on a *static*
+> near-black ground, where pure white is needlessly harsh. Over video the constraint
+> inverts: the background is the brightest and least predictable surface on the page, and
+> the extra headroom is what keeps type crisp against it. The video theme spec calls for
+> `#fff` explicitly. Treat §3.5's "no pure white" as scoped to non-video surfaces.
 
 `--accent-glow` is deliberately **not** wired into `@theme inline`. Exposing it as
 `bg-accent-glow` / `border-accent-glow` etc. would generate confusingly-named utilities
@@ -257,14 +282,12 @@ inside `<Spotlight>`'s inline `radial-gradient()`.
 > hue-distance rationale, unchanged). Swapping to indigo would have been full fidelity to
 > the reference system, but would break that accent-to-logo relationship for no real
 > gain — the ambient-lighting language works identically with either hue since it's a
-> *lightness/depth* system, not a *hue* system. Every ambient blob in §3.6 is a shade of
-> this same blue for exactly that reason: the whole background is meant to read as "the
-> accent, diffused," not as a second colour.
+> *lightness/depth* system, not a *hue* system. That reasoning still holds under the video
+> theme, where the accent is now the only chromatic element on the page at all.
 
 **Accent budget — unchanged in spirit, widened in scope.** Exactly one accent-coloured
 element per section: the section's `<Eyebrow>` pill (`ui/eyebrow.tsx`). Also still
-accent: primary buttons, project category labels, link hover, focus rings, and the
-ambient blobs (which are accent-family by definition, see above). Secondary in-section
+accent: primary buttons, project category labels, link hover, focus rings. Secondary in-section
 labels — Pricing's "Core Services" / "Bundles" / "Add-Ons" / "How We Work" — stay
 `text-subtle`, no pill. If it starts feeling colourful, you have used too much.
 
@@ -399,26 +422,12 @@ here instead, the same way the five above were added.
 | Text stays perfectly readable while animating | Blur-in text, letter-by-letter typing |
 | One monochrome blob hue family (shades of the brand blue) | Multiple unrelated hues in the ambient system (the reference system's own purple/indigo mix) |
 
-### 3.6 Ambient background & spotlight system (added 2026-08-26)
+### 3.6 Spotlight system (added 2026-08-26)
 
-The signature of this redesign. Two reusable primitives, used sitewide:
-
-**`<AmbientBackground />`** (`ui/ambient-background.tsx`, rendered once in
-`layout.tsx`, `position: fixed`, `-z-10`, behind everything) — four stacked layers:
-
-1. Base radial gradient (`#0a0a0f` → `#050506` → `#020203`) for vertical depth.
-2. A faint SVG noise texture (`opacity-[0.02]`) so the gradients don't band.
-3. **Three** floating blurred blobs — deliberately fewer than the reference system's
-   four-blob spec, and deliberately **one hue family** (three shades of the brand blue:
-   `var(--accent)`, `#1D4ED8`, `#60A5FA`), not its purple/indigo mix — see §3.1's "why the
-   accent stayed blue" box. Each blob floats on its own `blob-float` `@keyframes`
-   (translateY + rotate, 9–11s, staggered with negative `animation-delay` so they don't
-   move in sync) — pure CSS, so the whole layer needs no JS and the existing
-   `prefers-reduced-motion` block in `globals.css` freezes it for free.
-4. A 64px grid-line overlay at `opacity-[0.025]`.
-
-It's a **server component** — nothing in it needs interactivity, so it costs nothing on
-the client bundle.
+> The other half of this section — `<AmbientBackground />`, the four-layer gradient/noise/
+> blob/grid canvas — **no longer exists.** It was replaced wholesale by the background
+> video on 2026-08-27 and the component was deleted. See §3.7. The spotlight system below
+> survived the theme change unchanged and is still used on every glass card.
 
 **`useSpotlight()` + `<Spotlight />`** (`lib/use-spotlight.ts` + `ui/spotlight.tsx`) —
 the mouse-tracking radial glow on every glass card. The hook writes pointer position to
@@ -450,14 +459,78 @@ cards, the pipeline status panel, the contact panel. The pricing add-ons list is
 glass surface that deliberately **isn't** — it's a reference list, not a decision
 surface, so it gets the shadow/gradient treatment without the glow.
 
+### 3.7 Background video & legibility scrim (added 2026-08-27)
+
+The current theme. One fixed, looping, muted video sits behind the entire site; every
+page is transparent and floats over it.
+
+**`<BackgroundVideo />`** (`ui/background-video.tsx`) — rendered once in `layout.tsx`,
+**outside `{children}`**, which matters: being outside `template.tsx` means client-side
+navigation never remounts it, so the footage plays continuously across route changes
+instead of restarting on every page. `position: fixed`, `-z-10`, so it paints above
+`<body>`'s background-color but below all page content and no section needs a `z-index`
+of its own.
+
+Attributes are `autoPlay muted loop playsInline preload="metadata"`, plus `tabIndex={-1}`
+and `aria-hidden` on the wrapper — it is decoration and must never take focus or be
+announced.
+
+**The scrim is load-bearing, not decoration.** A gradient overlay sits between the video
+and the content:
+
+```
+linear-gradient(180deg,
+  rgba(5,5,6,0.88) 0%,     /* under the fixed header */
+  rgba(5,5,6,0.75) 38%,    /* lightest point — the figure §3.1 is derived from */
+  rgba(5,5,6,0.78) 70%,
+  rgba(5,5,6,0.90) 100%)   /* under the footer */
+```
+
+Every contrast number in §3.1 is computed at that 0.75 point over a hypothetical
+pure-white video frame. **Reducing any of those opacities silently breaks WCAG AA across
+the whole site**, on footage we don't control and could be re-cut at any time. If the
+video is ever swapped, the scrim stays or gets darker, never lighter.
+
+Glass cards additionally carry `backdrop-blur-xl`. That is also not cosmetic: without it,
+body copy sits directly over moving footage and becomes genuinely hard to read even at
+passing contrast ratios, because the *motion* behind the text is the problem, not the
+luminance.
+
+**Reduced motion.** The video is a client component purely so it can honour
+`prefers-reduced-motion` — it pauses on a reduced-motion preference, leaving a still
+frame. `autoPlay` is set statically in JSX rather than conditionally: `useReducedMotion()`
+returns `null` during SSR and first render, so a conditional attribute would produce a
+hydration mismatch. The cost is a few frames of playback before the effect pauses it,
+which is the better trade.
+
+**Failure modes are all handled.** If the video is blocked, fails, or autoplay is refused
+(iOS Low Power Mode), the first frame or the flat `--background` shows through and the
+site is still fully legible — no layout shift and no dependency on the video for contrast,
+since the scrim is a separate opaque-ish layer.
+
 ---
 
 ## 4. PAGE MAP + WIREFRAMES
 
-Order, top to bottom. Nothing else. **Unchanged by the 2026-08-26 redesign** — §7.16
-restyled every section in place but didn't reorder, add, or remove any of them. The
-ASCII boxes below can't show glass cards, ambient blobs or the mouse-tracking glow; for
-what the page actually looks like now, see §3.6.
+> ### ⚠️ This section describes the OLD single-page layout
+> **Superseded 2026-08-27 (§7.19).** The site is multi-page now. Each block in the
+> wireframe below became its own route, in this order, with its content otherwise
+> unchanged:
+>
+> | Route | Section component | `h1` on that page |
+> | --- | --- | --- |
+> | `/` | `sections/hero.tsx` | `We Build Websites, Automations & AI Agents` |
+> | `/projects` | `sections/projects.tsx` | `Featured Projects` |
+> | `/pipeline` | `sections/pipeline.tsx` | `Our lead engine, in the open.` |
+> | `/pricing` | `sections/pricing.tsx` | `Every service, priced up front.` |
+> | `/about` | `sections/about.tsx` | `About` (the eyebrow pill carries the level) |
+> | `/contact` | `sections/contact.tsx` | `Have a project in mind? Let's build something together.` |
+>
+> The header, footer and background video live in `layout.tsx` and persist across all six.
+> The wireframe below is kept because it is still the clearest single picture of what each
+> section *contains* — read it as six page layouts stacked, not one scrolling page. The
+> ASCII boxes also can't show the video, glass cards or mouse-tracking glow; for that,
+> see §3.6–§3.7.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -2101,6 +2174,139 @@ pass — treat this document's §5 as the current copy reference, and the older 
 code blocks in §7 as historical/approximate rather than byte-exact. A full re-sync of
 those listings is a separate, larger task nobody has asked for yet.
 
+### 7.18 — Video-background theme (added 2026-08-27)  ✅ DONE
+
+Colours and background only. **No copy, no pricing figures, no section structure changed**
+in this step — the request was explicitly "only the theme". Full system in §3.7.
+
+**New:** `ui/background-video.tsx`. **Deleted:** `ui/ambient-background.tsx` (the blob
+canvas it replaces). **Rewritten:** `globals.css` (palette, font, scrollbar; the
+`blob-float` keyframes went with the component, `text-shimmer` stayed).
+
+- **Palette → white-on-video** (§3.1): text is white at descending opacities instead of
+  grey hex; glass and borders are heavier (6%/10%/18% vs 5%/6%/10%) because the old
+  values are invisible over footage.
+- **Font → Helvetica Now Var**, loaded by remote `@import`. Two deviations from the spec's
+  snippet, both deliberate:
+  1. It's applied via the `--font-sans` **token**, not `* { font-family: … }`. A universal
+     selector would also overwrite `font-mono`, killing the mono eyebrows, tags and badges
+     that the existing design depends on — and the instruction was to keep those.
+  2. Geist is kept as the first fallback (`"Helvetica Now Var", var(--font-geist-sans),
+     "Helvetica Neue", …`) so a failed third-party fetch degrades to the self-hosted
+     previous theme font rather than to Arial.
+  The `@import` **must stay the first rule in `globals.css`** — `@import "tailwindcss"` is
+  inlined and expanded at build time, so a remote `@import` placed after it is invalid CSS
+  and Lightning CSS warns (this was caught and fixed during the build, R10).
+- **`backdrop-blur-xl` added to every glass surface.** Required, not cosmetic — see §3.7.
+- **Opaque panels made translucent** so the video reads through: the pipeline status list
+  and its LIVE pill (`bg-background` → `/45` and `/60`), and the footer
+  (`bg-background-deep` → `/70` + blur).
+- **Hero** rebuilt as a full-viewport centred section per the spec
+  (`min-h-[calc(100svh-4rem)]`, `md:` 4.5rem — the header height, since `<main>` carries a
+  matching `pt`). Its headline now animates **per word** (first word at `0.15s`, `+0.08s`
+  each, `0.7s`, expo-out), with the accent shimmer on `AI Agents`. `svh` not `vh`: `vh` on
+  mobile is the pre-scroll viewport and causes a jump when the URL bar collapses.
+
+> **On `FadeUp`.** The theme spec supplied a `FadeUp` component. It was **not** added —
+> `ui/reveal.tsx` already did exactly that job with the same easing, duration and
+> `viewport: { once, amount: 0.2 }`. `Reveal` was extended with `as` / `duration` / `once`
+> to cover `FadeUp`'s API instead, so the codebase keeps one reveal primitive rather than
+> two identical ones. `as` also lets a reveal render as the semantic element it wraps
+> instead of always injecting a wrapper `div`.
+
+### 7.19 — Multi-page conversion + route transitions (added 2026-08-27)  ✅ DONE
+
+Six routes, each prerendered static. **Supersedes R1.** No section content changed; the
+sections were moved, not rewritten.
+
+```
+src/app/
+  layout.tsx        video + header + footer + site-wide JSON-LD  (persist across routes)
+  template.tsx      the page transition — remounts per route
+  page.tsx          /          → <Hero>
+  projects/page.tsx /projects  → <Projects> + <ProjectsCollectionData>
+  pipeline/page.tsx /pipeline  → <Pipeline>
+  pricing/page.tsx  /pricing   → <Pricing>
+  about/page.tsx    /about     → <About>
+  contact/page.tsx  /contact   → <Contact>
+```
+
+**The transition** (`template.tsx`): `template.tsx` rather than `layout.tsx` is what makes
+this work at all — Next gives a template a key per route segment, so it remounts on every
+navigation and replays its entrance. A layout mounts once and would never animate again.
+Two overlapping parts: a curtain collapsing upward off-screen (`scaleY 1 → 0`,
+`origin-top`, 0.55s) and the incoming page fading up behind it (0.5s, 0.12s delay). The
+curtain sits at `z-40`, **below** the header's `z-50`, so the nav stays fixed while only
+the content area wipes — navigating feels like swapping a panel in an app, not reloading a
+document. It's opaque rather than frosted because a full-viewport animated
+`backdrop-filter` is a reliable way to jank low-end hardware. Under reduced motion the
+curtain is dropped entirely and the page just fades (R8). Only `opacity`/`transform` (R9).
+
+**Navigation must use `next/link`.** A plain `<a>` triggers a full document load, which
+bypasses the transition entirely and re-downloads the video. Every internal link is a
+`<Link>`: header, hero CTAs, footer, mobile menu.
+
+**Active nav state** uses `useSelectedLayoutSegment()` (returns `null` on `/`, else the
+segment) rather than string-matching `usePathname()`. `navLinks` in `lib/site.ts` gained a
+`segment` field for it, and links carry `aria-current="page"` — so the active route is
+exposed to assistive tech, not just coloured differently.
+
+**Header breakpoint moved `md` → `lg`.** The nav grew to five items; five links plus the
+wordmark plus the CTA do not fit a 768px bar. Inline links now appear at `lg`, the
+hamburger covers everything below it. The `Let's talk` button still appears at `md`.
+
+**Heading levels were re-derived per page.** On one page there was one `h1` and everything
+else was `h2`/`h3`. Six pages need six `h1`s, so each page's lead heading was promoted and
+everything under it shifted up a level (`pricing.tsx` went h2→h1, h3→h2, h4→h3;
+`project-card.tsx` h3→h2). `/about` had no display heading at all — its `<Eyebrow>` label
+now renders as the `h1` via a new `as` prop, rather than inventing copy for one.
+
+**JSON-LD was split.** The projects `CollectionPage` used to render on `/` along with
+everything else; site-wide it would now claim *every* page is the projects collection. It
+moved to `ProjectsCollectionData` in `structured-data.tsx`, rendered only by
+`/projects`, with `@id` `…/projects#collection`. Organization / WebSite /
+ProfessionalService stay in the root layout and appear everywhere, correctly.
+
+**Per-page metadata**: each route exports `title`, `description` and its own
+`alternates.canonical`. The root layout's `%s · Automation Squad` template supplies the
+suffix.
+
+> **Sitemap:** resolved in §7.20, immediately below.
+
+### 7.20 — Generated sitemap (added 2026-08-27)  ✅ DONE
+
+`src/app/sitemap.ts` emits `/sitemap.xml` with all six routes. `robots.ts` already pointed
+at it and needed **no change** — it allows everything, declares the sitemap and sets
+`host`, which is still correct for a six-page site.
+
+> **Correcting the record.** Three earlier passes of this document claimed "`sitemap.ts`
+> does not exist and `/sitemap.xml` 404s". The first half was true; **the second half was
+> wrong**. A hand-written `public/sitemap.xml` from the original 2026-07-31 build was
+> serving 200 the whole time — `public/` is served ahead of app routes, so it also
+> silently shadowed the new `sitemap.ts` on its first build. It listed **only the home
+> page**, with a hardcoded `lastmod` of `2026-07-31`, so after the multi-page conversion
+> it was actively telling crawlers that five of the six pages didn't exist. It has been
+> deleted. **Do not put a static `sitemap.xml` back in `public/`** — it wins over the
+> generated route and the two will drift apart without any build error to warn you.
+
+Design notes:
+
+- **Routes derive from `navLinks`** (`lib/site.ts`) rather than being hand-listed, so
+  adding a page to the nav also adds it to the sitemap. A page deliberately kept *out* of
+  the nav must be appended in `sitemap.ts` explicitly — that is the one failure mode here.
+- **`loc` must match each page's `rel="canonical"` byte for byte.** `site.url` carries no
+  trailing slash, so the home entry is `https://team-automationsolutions.me` with none
+  either; a `/` mismatch would have the sitemap and the canonical tag nominating two
+  different URLs for the same page. Verified against all six in §11.
+- **Priorities** are set per route in a `PRIORITY` map: home `1`, pricing `0.9`,
+  projects/contact `0.8`, about/pipeline `0.6`.
+- `lastModified` is evaluated at build time (the route is static), so each deploy stamps
+  its own date rather than freezing one in source — which is exactly how the old static
+  file went stale.
+
+Also fixed in this step: `manifest.ts` still carried `background_color` / `theme_color` of
+`#0A0A0A` from the pre-video palette. Both now track `--background` (`#050506`).
+
 ---
 
 ## 8. MOTION SPEC
@@ -2136,8 +2342,8 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | --- | --- | --- | --- |
 | Container padding | `px-6` | `px-8` | `px-10` |
 | Header height | 64px | 72px | 72px |
-| Header nav links | hidden — reached via the hamburger menu | visible | visible |
-| Header right | hamburger toggle only | `Let's talk` button (h-10) | `Let's talk` button (h-10) |
+| Header nav links | hidden — hamburger menu | **hidden — hamburger menu** (changed 2026-08-27, five items don't fit) | visible inline at `lg` |
+| Header right | hamburger toggle only | `Let's talk` button + hamburger toggle | `Let's talk` button |
 | Hero H1 | 44px | 60px | 72px → 84px at xl |
 | Hero buttons | wrap to 2 rows if needed | inline | inline |
 | Project grid | 1 column | 2 columns | 2 columns |
@@ -2151,43 +2357,51 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | Contact panel padding | `px-8 py-14` | `px-14 py-20` | `px-20 py-24` |
 | Footer | stacked rows | one row | one row |
 
-**Mobile navigation (revised 2026-08-26 — see §7.16).** The original build deliberately
-shipped *without* a hamburger menu (three anchors didn't justify one). That decision is
-superseded, not just outdated: the reference design system this redesign integrates
-specifies the pattern explicitly, and the nav grew to 4 items when Pricing was added. On
-mobile the header now shows the wordmark plus a `Menu`/`X` toggle (`site-header.tsx`);
-tapping it drops an animated panel (`opacity`/`y`, 0.2s) with a blurred
-`bg-background/75 backdrop-blur-xl` background, the four nav links stacked vertically,
-and a full-width `Let's talk` primary button at the bottom. The desktop `Let's talk`
-button is hidden below `md` — on mobile it lives only inside the open menu.
+**Mobile navigation (revised 2026-08-26 §7.16, breakpoint moved 2026-08-27 §7.19).** The
+original build deliberately shipped *without* a hamburger menu (three anchors didn't
+justify one). That decision is superseded: the reference design system specifies the
+pattern explicitly, and the nav has since grown to five items. Below `lg` the header shows
+the wordmark plus a `Menu`/`X` toggle (`site-header.tsx`); tapping it drops an animated
+panel (`opacity`/`y`, 0.2s) over a blurred `bg-background/70 backdrop-blur-xl` header,
+with all five nav links stacked vertically and a full-width `Let's talk` primary button at
+the bottom. The panel closes on link click (handled in the link's `onClick` — **not** in a
+`useEffect` on the route segment; the `react-hooks/set-state-in-effect` lint rule
+correctly rejects that as a cascading render).
+
+The inline links moved from `md` to `lg` because five links plus the wordmark plus the CTA
+do not fit a 768px bar. `Let's talk` still appears from `md` up.
 
 Also required: no horizontal scroll at 320px · nothing hidden behind the fixed header
-(`scroll-mt-24` on every section) · all tap targets ≥ 44×44px.
+(`<main>` carries `pt-16 md:pt-18`, matching the header's height, and every section keeps
+`scroll-mt-24`) · all tap targets ≥ 44×44px.
 
 ---
 
 ## 10. ACCESSIBILITY + PERFORMANCE CHECKLIST
 
 ### Accessibility
-- [x] Exactly one `<h1>` on the page (the hero). Sections use `<h2>`, project titles `<h3>`. No skipped levels. — *verified in the rendered HTML: 1×h1, 2×h2, 3×h3*
+- [x] Exactly one `<h1>` **per route**, no skipped levels below it (§7.19 re-derived every level when the site went multi-page). — *verified in the served HTML of all six routes: each returns exactly 1 `<h1>`*
 - [x] `<nav aria-label="Primary">` on the header nav.
 - [x] Every `<Image>` has a descriptive `alt` (already in `projects.ts`).
-- [x] Decorative elements get `aria-hidden="true"` (`AmbientBackground`, `Spotlight`, the hero glow's successor, all icons).
+- [x] Decorative elements get `aria-hidden="true"` (`BackgroundVideo` and its scrim, `Spotlight`, the transition curtain, all icons). The background `<video>` additionally takes `tabIndex={-1}` so it is never focusable.
+- [x] Active nav route is exposed as `aria-current="page"`, not signalled by colour alone.
 - [x] Every external link: `target="_blank" rel="noopener noreferrer"` **and** an sr-only "opens in a new tab" hint. — *the Pricing PDF download is same-origin and uses `download` instead; it intentionally does not get this treatment, see §6.4.*
 - [x] Focus ring visible on every interactive element (global `:focus-visible` rule in §7.1). Never `outline: none`. — *outline-based, not a box-shadow ring, deliberately: several surfaces (primary buttons, project card images) use `overflow-hidden`, which would clip a ring but not an outline.*
 - [x] Tab order matches visual order. — *DOM order matches visual order; no `tabindex` overrides anywhere*
 - [x] Copy-email result announced via `aria-live="polite"`.
 - [x] `text-subtle` (#71717A, 4.0:1) is used **only** at ≥14px on non-essential meta text. Never for body copy.
 - [x] Mobile menu toggle has `aria-expanded` + `aria-controls` + a state-dependent `aria-label` ("Open menu" / "Close menu"), and the panel is dismissed on link click.
-- [x] `prefers-reduced-motion` honoured everywhere. — *implemented in `Reveal`, `ProjectCard`, the global CSS block (which also freezes the ambient blobs and text shimmer for free — both are plain CSS `@keyframes`), and explicitly disabled (not just zeroed) in the Hero's scroll-linked parallax via `useReducedMotion()`.*
+- [x] `prefers-reduced-motion` honoured everywhere. — *`Reveal`, `ProjectCard`, the Hero's word stagger, the `template.tsx` page transition (curtain dropped entirely, not just shortened), and `BackgroundVideo` (pauses to a still frame). The global CSS block additionally freezes the `text-shimmer` keyframes for free.*
 
 ### Performance
 - [x] Correct `sizes` on every `fill` image (already in §7.8) — wrong `sizes` = oversized downloads.
 - [x] Image containers have a fixed `aspect-[…]` so nothing shifts while loading (CLS < 0.1).
-- [x] Fonts via `next/font/google` with `display: "swap"` — no `<link>` to Google Fonts, no FOIT.
-- [x] `"use client"` only where interactivity actually lives: `site-header`, `hero`, `projects`, `project-card`, `pipeline`, `pricing`, `contact`, `reveal`, `copy-email-button`, `use-spotlight`. `layout`, `page`, `about`, `site-footer`, `button`, `ambient-background`, `spotlight`, `eyebrow` stay server components. (`pipeline` / `pricing` / `contact` moved from server to client in §7.16, each for its spotlight card's `useSpotlight()` hook.)
-- [x] Only `opacity` / `transform` animated — *two narrow, documented exceptions: the ambient blobs' `blob-float` keyframes animate `transform` only (compliant), but the Hero's accent-phrase `text-shimmer` animates `background-position` on a few words of text (§3.2's R9 note) and the spotlight's position update writes CSS custom properties per pointer-move rather than animating a CSS property at all (no animation loop, event-driven).*
-- [x] Ambient background is `position: fixed` (no layout/paint cost on scroll) and a server component (zero client JS).
+- [x] Geist via `next/font/google` with `display: "swap"`. — ⚠️ *The theme face, Helvetica Now Var, is a **remote `@import` from a third party** (`db.onlinewebfonts.com`) and is the one exception to "no external font links". It is render-blocking CSS on a host we don't control. Mitigated with a `<link rel="preconnect">` in `layout.tsx` and a Geist fallback in the stack, but this is a real, accepted trade — see §7.18.*
+- [x] `"use client"` only where interactivity actually lives: `site-header`, `hero`, `projects`, `project-card`, `pipeline`, `pricing`, `contact`, `reveal`, `copy-email-button`, `use-spotlight`, `background-video`, `template`. `layout`, all six `page.tsx` files, `about`, `site-footer`, `button`, `spotlight`, `eyebrow`, `structured-data` stay server components.
+- [x] Only `opacity` / `transform` animated — *two narrow, documented exceptions: the Hero's accent-phrase `text-shimmer` animates `background-position` on two words of text (§3.2's R9 note), and the spotlight writes CSS custom properties per pointer-move rather than animating a CSS property at all (event-driven, no animation loop).*
+- [x] Background video is `position: fixed` (no layout/paint cost on scroll), `preload="metadata"` (not `auto` — the full file is never eagerly downloaded), and lives in `layout.tsx` outside `template.tsx` so client-side navigation never remounts or re-fetches it.
+- [x] Page transitions animate `opacity`/`transform` only, and the curtain is opaque rather than a full-viewport animated `backdrop-filter` (§7.19).
+- [ ] ⚠️ **Background video weight not audited.** It is a third-party CDN asset of unknown size fetched on every cold load. Check its transfer size and consider a `poster` frame — *needs a browser / network panel.*
 - [x] No external scripts, no analytics, no icon-font, no CSS-in-JS runtime.
 - [x] Images served through `next/image` — *optimiser returns HTTP 200 for all three*
 - [ ] ⚠️ Project screenshots optimised, < 600 KB each. — **blocked: the three files are placeholders.** Re-check after swapping in the real screenshots.
@@ -2210,17 +2424,19 @@ npm run dev      # then open http://localhost:3000
 - [x] `npm run lint` — zero problems.
 - [x] `npm run build` — zero errors, zero warnings. `/` prerenders as static.
 - [x] Production server serves `/` with HTTP 200.
-- [x] All six section anchors present in the HTML: `#top`, `#projects`, `#pipeline`, `#pricing`, `#about`, `#contact`.
-- [x] Lead pipeline section prerenders statically: heading, all five statuses and the dashboard URL are in the served HTML, and `/` is still `○ (Static)`.
-- [x] Pricing section prerenders statically: heading, all six core services, all four bundles, all three add-ons and the `Download rate card` link are in the served HTML, and `/` is still `○ (Static)`.
+- [x] All six routes serve HTTP 200 and prerender `○ (Static)`: `/`, `/projects`, `/pipeline`, `/pricing`, `/about`, `/contact`.
+- [x] Each route returns **exactly one `<h1>`** and its own `<title>` (`Projects · Automation Squad`, `Lead Pipeline · …`, etc.) and `rel="canonical"`.
+- [x] Lead pipeline section prerenders statically: heading, all five statuses and the dashboard URL are in the served HTML of `/pipeline`.
+- [x] Pricing section prerenders statically: heading, all six core services, all four bundles, all three add-ons and the `Download rate card` link are in the served HTML of `/pricing`.
 - [x] `/Automation_Squad_Rate_Card.pdf` serves `200 application/pdf`.
 - [x] All three project titles, categories, descriptions and tag sets render.
 - [x] All three outbound URLs present (`anchor-builders.vercel.app`, `lumberwiz-2-0.vercel.app`, `khudclothes.com`).
 - [x] Gmail compose URL and `mailto:` fallback both present.
 - [x] All three `/_next/image` requests return HTTP 200.
 - [x] No Tech Stack / testimonial / blog / logo-wall markup anywhere in the output. — *Pricing and Lead pipeline are the two approved exceptions to R5, see §0.*
-- [x] Redesign (§7.16) markers present in the served HTML: `blob-float`, `text-shimmer`, `shadow-card`, `rounded-2xl`, `bg-linear-to-b`, `group/spot`, `lg:col-span-6` (the bento hero card). `/` is still `○ (Static)` and the mobile menu (`id="mobile-menu"`) correctly does **not** appear in the initial HTML — it only mounts once `menuOpen` is toggled client-side.
-- [x] All pricing figures and the PDF still verified byte-for-byte against §7.15's original check after the restyle: `$1,050`, `$1,950`, `$280`, all three `Save $… on setup` lines, and `/Automation_Squad_Rate_Card.pdf` still serves `200 application/pdf`.
+- [x] Redesign (§7.16) markers present in the served HTML: `text-shimmer`, `shadow-card`, `rounded-2xl`, `bg-linear-to-b`, `group/spot`, `lg:col-span-6` (the bento hero card). The mobile menu (`id="mobile-menu"`) correctly does **not** appear in the initial HTML — it only mounts once `menuOpen` is toggled client-side.
+- [x] Video theme (§7.18) verified in the served output: the `<video>` renders with `autoPlay muted loop playsInline preload="metadata"` and the CloudFront `src`; the built CSS chunk's **first rule** is the Helvetica Now Var `@import`, and `--font-sans` resolves to `"Helvetica Now Var", var(--font-geist-sans), …`.
+- [x] All pricing figures and the PDF still verified byte-for-byte after both the restyle and the multi-page move: `$1,050`, `$1,950`, `$280`, all three `Save $… on setup` lines, and `/Automation_Squad_Rate_Card.pdf` still serves `200 application/pdf`.
 
 **Metadata & brand (§6.2 / §6.3)**
 - [x] All 13 routes/assets serve 200 with the right content-type: `/`, `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, `/opengraph-image`, `/twitter-image`, `/icon.png`, `/apple-icon.png`, `/favicon.ico`, `/logo-mark.png`, `/logo-lockup.png`, `/icon-192.png`, `/icon-512.png`.
@@ -2228,7 +2444,7 @@ npm run dev      # then open http://localhost:3000
 - [x] OG tags complete: `og:title`, `og:url`, `og:site_name`, `og:locale`, `og:type`, `og:image` (+ type/width/height/alt).
 - [x] Twitter card is `summary_large_image` with its own image tags.
 - [x] Favicon links resolve to the **branded** icons, not the create-next-app default.
-- [x] `robots.txt` allows all and points at the sitemap; `sitemap.xml` lists the canonical URL.
+- [x] `robots.txt` allows all and points at the sitemap. `sitemap.xml` lists **all six routes** with the build date, and each `<loc>` matches that page's `rel="canonical"` exactly (verified route by route, §7.20).
 - [x] JSON-LD parses as valid JSON and contains Organization + WebSite + ProfessionalService + CollectionPage with all three projects.
 - [x] OG card rendered and visually reviewed at 1200×630.
 - [x] Header renders the logo chip through `next/image` with a 2× srcset.
@@ -2245,15 +2461,19 @@ These need a real browser. Nothing below has been verified.
 
 **Interaction**
 - [ ] Header is transparent at the top and turns frosted + hairline-bordered after ~24px of scroll.
-- [ ] Below `md`: header shows only the wordmark + hamburger icon (no inline `Let's talk`). Tapping it opens a blurred dropdown with all four links stacked and a full-width `Let's talk` button at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
-- [ ] `Projects` / `Pricing` / `About` / `Contact` / `Let's talk` all scroll smoothly to the right section, and the heading is **not** hidden under the header.
-- [ ] `View Projects` → projects section. `Contact Me` → contact section.
-- [ ] The three ambient background blobs are visible and slowly floating (near-invisible if reduced motion is on — see the Accessibility checks below).
+- [ ] Below `lg`: header shows the wordmark + hamburger (plus `Let's talk` from `md` up). Tapping it opens a dropdown with all five links stacked and a full-width `Let's talk` at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
+- [ ] **The background video plays, is muted, loops seamlessly, and covers the viewport without distortion at every width.** It keeps playing *uninterrupted* while navigating between pages — it must not restart or flash.
+- [ ] Text is comfortably readable over the *brightest* part of the video loop on every page, especially the pricing tables. If any of it is marginal, the scrim in `ui/background-video.tsx` is too light (§3.7).
+- [ ] Navigating between pages plays the curtain transition: the content area wipes upward while the new page fades in, and the **header stays put** throughout.
+- [ ] `Projects` / `Pipeline` / `Pricing` / `About` / `Contact` / `Let's talk` each navigate to the right route, and the active link is visibly highlighted once there.
+- [ ] `View Projects` → `/projects`. `Contact Me` → `/contact`. Logo → `/`.
+- [ ] Browser back/forward moves between pages correctly and replays the transition.
 - [ ] Moving the mouse over a project card, pricing card, the pipeline panel, or the contact panel shows a soft blue glow following the cursor.
 - [ ] Hovering a project card: lifts ~6px, border lightens, image zooms slightly, arrow nudges.
 - [ ] Hovering a primary button: background brightens, glow increases, a diagonal light sweep passes across it once.
-- [ ] Scrolling past the hero: it fades, shrinks slightly and drifts down before Projects comes into view — not still animating once Projects is on screen.
-- [ ] The "AI Automations" phrase in the Hero H1 has a slow, continuously animating blue gradient shimmer.
+- [ ] Hero headline animates in **word by word**, left to right, on load.
+- [ ] The "AI Agents" phrase in the Hero H1 has a slow, continuously animating blue gradient shimmer.
+- [ ] Headings render in Helvetica Now Var, not the Geist fallback (compare against a `font-family` readout in DevTools — a silent fallback is the likely failure mode if the third-party host is down).
 - [ ] `View Project` opens the correct site in a **new tab** (check all three URLs).
 - [ ] `View the dashboard` opens `https://leads-website-alpha.vercel.app/` in a **new tab**, and the statuses on that page still read Researching / Ready / Approved / Sent / Replied.
 - [ ] `Download rate card` saves `Automation-Squad-Rate-Card.pdf` to disk (does **not** open a new tab), and the PDF opens and matches the on-page figures.
@@ -2263,13 +2483,15 @@ These need a real browser. Nothing below has been verified.
 
 **Responsive** — resize to each width and look:
 - [ ] **320px** — no horizontal scrollbar anywhere.
-- [ ] **375px** — H1 wraps to 3–4 lines and never overflows; buttons reachable; cards stacked.
-- [ ] **768px** — 2-column grid appears; nav links appear.
+- [ ] **375px** — H1 wraps and never overflows; buttons reachable; cards stacked. The hero fills the screen without the content being clipped, and does **not** jump when the mobile URL bar collapses (that's what `svh` is for).
+- [ ] **768px** — 2-column grid appears; `Let's talk` appears; nav is **still** the hamburger.
+- [ ] **1024px** — inline nav links appear, hamburger disappears.
 - [ ] **1024px / 1440px** — content stays centred at max 1200px; margins feel generous.
 
 **Accessibility**
 - [ ] Tab through the entire page: a visible blue focus ring on every stop, in visual order.
-- [ ] DevTools → Rendering → **Emulate `prefers-reduced-motion: reduce`** → reload. Content still appears (fades only), nothing slides, nothing is stuck invisible. The ambient blobs and the Hero's text shimmer are frozen in place (not just slowed). The Hero no longer fades/scales/drifts while scrolling past it.
+- [ ] DevTools → Rendering → **Emulate `prefers-reduced-motion: reduce`** → reload. Content still appears (fades only), nothing slides, nothing is stuck invisible. **The background video is paused on a still frame**, the Hero's text shimmer is frozen (not just slowed), the hero words appear without travelling, and navigating between pages cross-fades with **no curtain wipe**.
+- [ ] With the video paused by reduced motion, or blocked entirely (DevTools → Network → block the CloudFront request), every page is still fully legible.
 - [ ] DevTools → Lighthouse → Accessibility = 100.
 
 **Content**

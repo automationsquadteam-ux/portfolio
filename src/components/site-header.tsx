@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useSelectedLayoutSegment } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -17,6 +19,8 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  // null on "/", otherwise the route segment ("projects", "pricing", …).
+  const segment = useSelectedLayoutSegment();
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 24);
@@ -26,7 +30,7 @@ export function SiteHeader() {
   // open (e.g. rotating a tablet) would otherwise leave it stuck open
   // underneath the now-visible desktop nav.
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px)");
+    const query = window.matchMedia("(min-width: 1024px)");
     const closeOnDesktop = () => setMenuOpen(false);
     query.addEventListener("change", closeOnDesktop);
     return () => query.removeEventListener("change", closeOnDesktop);
@@ -40,16 +44,16 @@ export function SiteHeader() {
       className={[
         "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
         scrolled || menuOpen
-          ? "border-b border-line bg-background/75 backdrop-blur-xl"
+          ? "border-b border-line bg-background/70 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent",
       ].join(" ")}
     >
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-6 md:h-[72px] md:px-8 lg:px-10"
+        className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-6 md:h-18 md:px-8 lg:px-10"
       >
-        <a
-          href="#top"
+        <Link
+          href="/"
           className="flex items-center gap-2.5 transition-opacity duration-200 hover:opacity-70"
         >
           {/* Brand navy measures 1.7:1 on this background, so the mark sits
@@ -67,32 +71,41 @@ export function SiteHeader() {
           <span className="font-mono text-[11px] font-semibold tracking-[0.16em] text-foreground uppercase md:text-xs">
             {site.name}
           </span>
-        </a>
+        </Link>
 
-        {/* Desktop links — hidden below md, reached via the hamburger menu instead */}
-        <ul className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
+        {/* Inline links appear at lg, not md: five items plus the wordmark and
+            the CTA don't fit comfortably in a 768px bar. Below that they live
+            in the menu panel. */}
+        <ul className="hidden items-center gap-7 lg:flex">
+          {navLinks.map((link) => {
+            const active = segment === link.segment;
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={[
+                    "text-sm transition-colors duration-200 hover:text-foreground",
+                    active ? "text-foreground" : "text-muted",
+                  ].join(" ")}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-2">
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className={buttonClass(
               "secondary",
-              "hidden h-9 px-4 text-[13px] md:inline-flex md:h-10 md:px-5 md:text-sm",
+              "hidden h-10 px-5 text-sm md:inline-flex",
             )}
           >
             Let&apos;s talk
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -100,7 +113,7 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
-            className="inline-flex size-10 items-center justify-center rounded-lg text-foreground transition-colors duration-200 hover:bg-surface md:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-lg text-foreground transition-colors duration-200 hover:bg-surface lg:hidden"
           >
             {menuOpen ? (
               <X className="size-5" aria-hidden="true" />
@@ -119,29 +132,36 @@ export function SiteHeader() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: EASE }}
-            className="border-t border-line md:hidden"
+            className="border-t border-line lg:hidden"
           >
             <ul className="flex flex-col gap-1 px-6 py-4">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="block rounded-lg px-3 py-3 text-base text-muted transition-colors duration-200 hover:bg-surface hover:text-foreground"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                const active = segment === link.segment;
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      aria-current={active ? "page" : undefined}
+                      className={[
+                        "block rounded-lg px-3 py-3 text-base transition-colors duration-200 hover:bg-surface hover:text-foreground",
+                        active ? "bg-surface text-foreground" : "text-muted",
+                      ].join(" ")}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
             <div className="px-6 pb-6">
-              <a
-                href="#contact"
+              <Link
+                href="/contact"
                 onClick={() => setMenuOpen(false)}
                 className={buttonClass("primary", "w-full")}
               >
                 Let&apos;s talk
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

@@ -74,14 +74,14 @@ function ServiceCard({ service }: { service: CoreService }) {
       onPointerMove={onPointerMove}
       className={[
         "group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line",
-        "bg-linear-to-b from-white/8 to-white/2 p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover",
+        "bg-linear-to-b from-white/10 to-white/4 p-6 shadow-card backdrop-blur-xl transition-shadow duration-300 hover:shadow-card-hover",
         spanClass[service.span],
       ].join(" ")}
     >
       <Spotlight />
-      <h4 className="text-lg font-semibold tracking-[-0.01em]">
+      <h3 className="text-lg font-semibold tracking-[-0.01em]">
         {service.name}
-      </h4>
+      </h3>
       <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-muted">
         {service.description}
       </p>
@@ -102,12 +102,12 @@ function BundleCard({ bundle }: { bundle: Bundle }) {
     <article
       ref={ref}
       onPointerMove={onPointerMove}
-      className="group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover md:p-8"
+      className="group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 p-6 shadow-card backdrop-blur-xl transition-shadow duration-300 hover:shadow-card-hover md:p-8"
     >
       <Spotlight />
-      <h4 className="text-xl font-semibold tracking-[-0.02em]">
+      <h3 className="text-xl font-semibold tracking-[-0.02em]">
         {bundle.name}
-      </h4>
+      </h3>
       <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-muted">
         {bundle.description}
       </p>
@@ -147,16 +147,16 @@ export function Pricing() {
   return (
     <section
       id="pricing"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 border-t border-line px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
     >
       {/* ── Header + PDF download ────────────────────────────────────── */}
       <Reveal>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <Eyebrow>Pricing</Eyebrow>
-            <h2 className="mt-6 max-w-[20ch] text-4xl leading-[1.08] font-semibold tracking-[-0.03em] md:text-5xl">
+            <h1 className="mt-6 max-w-[20ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-transparent md:text-5xl">
               Every service, priced up front.
-            </h2>
+            </h1>
             <p className="mt-6 max-w-[58ch] text-[15px] leading-relaxed text-muted md:text-base">
               {pricingIntro}
             </p>
@@ -182,9 +182,9 @@ export function Pricing() {
         <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
           Core Services
         </span>
-        <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
           Pick what you need
-        </h3>
+        </h2>
 
         <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-16 md:gap-6 lg:grid-cols-6">
           {coreServices.map((service) => (
@@ -198,9 +198,9 @@ export function Pricing() {
         <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
           Bundles
         </span>
-        <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
           Combine services and save
-        </h3>
+        </h2>
         <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-muted">
           Each bundle below costs less than buying the same services
           separately.
@@ -222,11 +222,11 @@ export function Pricing() {
           <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
             Add-Ons
           </span>
-          <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
             Extend any service
-          </h3>
+          </h2>
 
-          <div className="mt-6 rounded-2xl border border-line bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card">
+          <div className="mt-6 rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 p-2 shadow-card backdrop-blur-xl">
             <ul className="divide-y divide-line">
               {addOns.map((addOn) => (
                 <li
@@ -249,9 +249,9 @@ export function Pricing() {
           <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
             How We Work
           </span>
-          <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
             Getting started
-          </h3>
+          </h2>
           <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-muted">
             {pricingHowWeWork}
           </p>

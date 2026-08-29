@@ -21,7 +21,7 @@ export function ProjectCard({ project }: { project: Project }) {
       transition={HOVER_SPRING}
       className={[
         "group/spot group relative isolate overflow-hidden rounded-2xl border border-line",
-        "bg-linear-to-b from-white/8 to-white/2 p-2 shadow-card",
+        "bg-linear-to-b from-white/10 to-white/4 p-2 shadow-card backdrop-blur-xl",
         "transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-card-hover",
         project.wide ? "md:col-span-2" : "",
       ].join(" ")}
@@ -59,9 +59,9 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.category}
         </span>
 
-        <h3 className="text-xl font-semibold tracking-[-0.02em] md:text-2xl">
+        <h2 className="text-xl font-semibold tracking-[-0.02em] md:text-2xl">
           {project.title}
-        </h3>
+        </h2>
 
         <p className="max-w-[52ch] text-[15px] leading-relaxed text-muted">
           {project.description}

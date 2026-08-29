@@ -5,11 +5,14 @@ export function About() {
   return (
     <section
       id="about"
-      className="mx-auto w-full max-w-[1200px] scroll-mt-24 border-t border-line px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
+      className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
     >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         <Reveal className="md:col-span-3">
-          <Eyebrow>About</Eyebrow>
+          {/* The page's h1. This section has no display heading of its own —
+              the label *is* the heading — so it carries the level rather than
+              inventing new copy for one. */}
+          <Eyebrow as="h1">About</Eyebrow>
         </Reveal>
 
         <Reveal delay={0.08} className="md:col-span-9">
