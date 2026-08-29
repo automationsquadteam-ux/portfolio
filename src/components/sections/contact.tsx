@@ -25,7 +25,7 @@ export function Contact() {
         <div
           ref={ref}
           onPointerMove={onPointerMove}
-          className="group/spot relative isolate overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 px-8 py-14 shadow-card backdrop-blur-xl md:px-14 md:py-20 lg:px-20 lg:py-24"
+          className="group/spot relative isolate overflow-hidden rounded-2xl border border-line glass-panel px-8 py-14 shadow-card md:px-14 md:py-20 lg:px-20 lg:py-24"
         >
           <Spotlight />
 

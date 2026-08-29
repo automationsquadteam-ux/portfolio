@@ -15,9 +15,15 @@ const VIDEO_SRC =
  * Sits at -z-10 and paints above <body>'s background-color but below all page
  * content, so sections need no z-index of their own to stack correctly.
  *
- * The scrim is not decoration. Every contrast figure in globals.css §:root is
- * computed against its lightest point (75% #050506); it's what makes white
- * text safe over footage whose brightness we don't control. See BUILD_SPEC §3.7.
+ * The footage is a dark wireframe sphere with a gold glow on a NEAR-WHITE
+ * ground, and it is deliberately left bright — it is the centrepiece, not
+ * wallpaper. The scrim below is a light vignette only: it darkens the top and
+ * bottom edges so the header and footer have something to sit against, and
+ * barely touches the middle.
+ *
+ * That means legibility is NOT the scrim's job here (it was in the previous
+ * revision). It belongs entirely to the dark `glass-panel` surfaces every text
+ * block sits on. Do not put body copy directly over this. See BUILD_SPEC §3.7.
  */
 export function BackgroundVideo() {
   const ref = useRef<HTMLVideoElement>(null);
@@ -50,7 +56,9 @@ export function BackgroundVideo() {
       <video
         ref={ref}
         className="size-full object-cover"
+        style={{ filter: "saturate(1.25) contrast(1.06)" }}
         src={VIDEO_SRC}
+        poster="/video-poster.jpg"
         autoPlay
         muted
         loop
@@ -59,18 +67,25 @@ export function BackgroundVideo() {
         tabIndex={-1}
       />
 
-      {/* Legibility scrim — darkest at the top and bottom edges, where the
-          fixed header and the footer sit.
-
-          Deepened 2026-08-29: the previous 0.75–0.90 range left the page
-          reading washed-out grey rather than near-black, so content sat too
-          close to its background in value. The video is still legible as
-          motion behind it; it just no longer competes with the type. */}
+      {/* Edge vignette, not a legibility scrim. Strong at the very top and
+          bottom so the fixed header and the footer have something to meet,
+          near-clear across the middle so the sphere and its gold glow read at
+          essentially full brightness. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(5,5,6,0.95) 0%, rgba(5,5,6,0.87) 38%, rgba(5,5,6,0.89) 70%, rgba(5,5,6,0.96) 100%)",
+            "linear-gradient(180deg, rgba(5,5,6,0.72) 0%, rgba(5,5,6,0.14) 22%, rgba(5,5,6,0.10) 55%, rgba(5,5,6,0.30) 82%, rgba(5,5,6,0.75) 100%)",
+        }}
+      />
+
+      {/* A wash of the accent gold, screened over the footage to warm the whole
+          canvas toward the glow rather than leaving it neutral grey. */}
+      <div
+        className="absolute inset-0 mix-blend-soft-light"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% 42%, rgba(245,165,36,0.5) 0%, transparent 62%)",
         }}
       />
     </div>

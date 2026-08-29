@@ -42,10 +42,13 @@ export function SiteHeader() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: EASE }}
       className={[
-        "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
+        "fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-colors duration-300",
+        // Never fully transparent any more: the video behind it is bright, so a
+        // see-through header would put white nav text on a near-white ground.
+        // Both states are dark glass; scrolling just deepens it.
         scrolled || menuOpen
-          ? "border-b border-line bg-background/70 backdrop-blur-xl"
-          : "border-b border-transparent bg-transparent",
+          ? "border-b border-line bg-background-deep/88"
+          : "border-b border-white/5 bg-background-deep/55",
       ].join(" ")}
     >
       <nav

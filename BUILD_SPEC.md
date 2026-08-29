@@ -33,7 +33,8 @@ or the palette, because the contrast figures in §3.1 depend on both.
 | §3.7 / §7.18 Video-background theme (added 2026-08-27) | ✅ Built — fixed background video + legibility scrim, white-on-video palette, Helvetica Now Var. Replaces the ambient-blob system from §7.16 |
 | §7.19 Multi-page conversion + route transitions (added 2026-08-27) | ✅ Built — 6 routes, all prerendered static, each with one `h1`, its own title/description/canonical. Curtain-wipe page transition via `template.tsx` |
 | §7.20 Generated sitemap (added 2026-08-27) | ✅ Built — `/sitemap.xml` lists all six routes; stale `public/sitemap.xml` that was shadowing it deleted. `robots.ts` needed no change |
-| §7.21 Scrim depth, sticky footer, Home nav (added 2026-08-29) | ✅ Built — scrim deepened and §3.1 contrast re-derived, footer pinned to the viewport bottom and made opaque, `Home` added to the nav |
+| §7.21 Scrim depth, sticky footer, Home nav (added 2026-08-29) | ⚠️ Sticky footer + `Home` nav stand; the scrim change was **reversed** by §7.22 |
+| §7.22 Video as centrepiece: dark panels, gold accent (added 2026-08-29) | ✅ Built — video unscrimmed and boosted, all text moved onto dark glass panels, accent moved to gold/orange, poster added |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -126,6 +127,7 @@ portfolio/
 │   ├── logo-lockup.png             §6.2 transparent full lockup (JSON-LD logo)
 │   ├── icon-192.png                §6.2 PWA icon
 │   ├── icon-512.png                §6.2 PWA icon
+│   ├── video-poster.jpg            §3.7 first frame of the background video (54 KB)
 │   └── Automation_Squad_Rate_Card.pdf  §6.4 the rate-card PDF, downloadable from §7.15
 ├── src/
 │   ├── app/
@@ -162,7 +164,8 @@ portfolio/
 │   │       ├── button.tsx          §7.7  server — buttonClass() + ButtonLink, glow shadow + shine sweep (§7.16)
 │   │       ├── project-card.tsx    §7.8  client — hover lift + image zoom + spotlight (§7.16)
 │   │       ├── copy-email-button.tsx §7.11 client — clipboard + Copied state
-│   │       ├── background-video.tsx §3.7/§7.18 client — the fixed background video + legibility scrim
+│   │       ├── background-video.tsx §3.7/§7.18 client — the fixed background video + edge vignette
+│   │       ├── panel.tsx           §3.7/§7.22 server — the dark glass sheet every text block sits on
 │   │       ├── spotlight.tsx       §3.6/§7.16 — the mouse-tracking glow overlay
 │   │       └── eyebrow.tsx         §3.1/§7.16 server — the shared accent-pill section label
 │   └── lib/
@@ -237,41 +240,50 @@ This is Next.js **16**, not 13/14/15. Things changed.
 Dark is the only theme. Surfaces and borders are translucent white, not flat hex, so the
 background video shows through every card.
 
-**Contrast is guaranteed by the scrim, not by the video.** The figures below are computed
-against the scrim's *lightest* point (87% `#050506`) composited over a worst-case
-pure-white video frame, i.e. `~#252525`. That is the floor: any darker frame only
-improves them. Lowering the scrim opacity in `ui/background-video.tsx` invalidates this
-entire column — re-derive it before you touch that gradient.
+> ### ⚠️ Rewritten 2026-08-29 (§7.22) — the video is BRIGHT
+> The background video is a dark wireframe sphere with a gold glow on a **near-white**
+> ground. Two earlier revisions treated it as if it were dark footage and buried it under
+> a heavy scrim, which is what made the site read as grey mush. It is now left bright and
+> is the page's centrepiece. Everything below follows from that.
+
+**Contrast is guaranteed by `--panel`, not by the scrim.** There is no longer a
+legibility scrim — the vignette in `ui/background-video.tsx` only darkens the top and
+bottom edges. Instead **no body text ever sits directly on the page**; every text block
+sits on a dark glass panel. The figures below are computed against a worst-case
+pure-white video frame under an 85% `--panel`, i.e. `~#2C2C2C`. Lightening `--panel`
+invalidates this entire column — re-derive it first.
 
 | Token | Value | Tailwind class | Used for | Contrast (worst case) |
 | --- | --- | --- | --- | --- |
 | `--background` | `#050506` | `bg-background` | Painted behind the video: covers the pre-decode moment, and is the permanent fallback if it never loads | — |
-| `--background-deep` | `#020203` | `bg-background-deep` | Footer ground (fully opaque) and the page-transition curtain | — |
-| `--surface` | `rgba(255,255,255,0.06)` | `bg-surface` | Card backgrounds — translucent so the video shows through | — |
-| `--surface-hover` | `rgba(255,255,255,0.1)` | `bg-surface-hover` | Card + button hover | — |
-| `--line` | `rgba(255,255,255,0.1)` | `border-line` | Hairline borders, dividers | — |
-| `--line-strong` | `rgba(255,255,255,0.18)` | `border-line-strong` | Border on hover | — |
-| `--foreground` | `#FFFFFF` | `text-foreground` | Headings, primary text | ~15.3:1 ✅ |
-| `--muted` | `rgba(255,255,255,0.85)` | `text-muted` | Body copy, descriptions | ~11.4:1 ✅ |
-| `--subtle` | `rgba(255,255,255,0.62)` | `text-subtle` | Meta labels, footer, tags | ~6.8:1 — **≥14px only** |
-| `--accent` | `#3B82F6` | `text-accent` | Accent **text** (eyebrows, category labels) | ~4.2:1 ⚠️ — see below |
-| `--accent-solid` | `#2563EB` | `bg-accent-solid` | Solid button **fill** (with white text) | 5.0:1 ✅ |
-| `--accent-hover` | `#1D4ED8` | `bg-accent-hover` | Solid button hover fill | ✅ |
-| `--accent-fg` | `#FFFFFF` | `text-accent-fg` | Text on top of accent fill | ✅ |
-| `--accent-glow` | `rgba(59,130,246,0.3)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows | — |
+| `--background-deep` | `#020203` | `bg-background-deep` | Footer ground (opaque), header glass, page-transition curtain | — |
+| `--panel` | `rgba(6,6,8,0.85)` | `glass-panel` utility | **The** surface. Every text block and card. Dark-tinted, not white-tinted | — |
+| `--surface` | `rgba(255,255,255,0.07)` | `bg-surface` | Insets *within* a panel (the pipeline status list, the add-ons list) | — |
+| `--surface-hover` | `rgba(255,255,255,0.12)` | `bg-surface-hover` | Row + button hover | — |
+| `--line` | `rgba(255,255,255,0.12)` | `border-line` | Hairline borders, dividers | — |
+| `--line-strong` | `rgba(255,255,255,0.22)` | `border-line-strong` | Border on hover | — |
+| `--foreground` | `#FFFFFF` | `text-foreground` | Headings, primary text | ~13.9:1 ✅ |
+| `--muted` | `rgba(255,255,255,0.82)` | `text-muted` | Body copy, descriptions | ~9.9:1 ✅ |
+| `--subtle` | `rgba(255,255,255,0.60)` | `text-subtle` | Meta labels, footer, tags | ~6.2:1 — **≥14px only** |
+| `--accent` | `#F5A524` (gold) | `text-accent` | Accent **text**, borders, the LIVE dot | ~6.7:1 ✅ |
+| `--accent-solid` | `#FD6705` (brand orange) | `bg-accent-solid` | Solid button **fill** — pairs with `--accent-fg`, never white | — |
+| `--accent-hover` | `#E05A02` | `bg-accent-hover` | Solid button hover fill | — |
+| `--accent-fg` | `#1A0F04` (near-black) | `text-accent-fg` | Text on top of an accent fill | 6.4:1 on `--accent-solid` ✅ |
+| `--accent-glow` | `rgba(245,165,36,0.35)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows, the video's warm wash | — |
 
-> ### ⚠️ `--accent` as text is the tightest value on the page
-> At the worst case above it measures **~4.2:1**, just under the 4.5:1 AA floor for
-> small text. Two things keep that from biting in practice: it requires a *fully white*
-> video frame, and the two places accent text appears are both mitigated —
-> the `<Eyebrow>` pill sits on a **darkened** chip (`bg-background/60`, not the lightening
-> `bg-surface` it used before 2026-08-29), which lifts it to ~5.1:1.
+> ### Why the accent is gold, and why fills use near-black text
+> The accent moved from blue to gold on 2026-08-29. It ties the video's glow to the
+> logo's orange (`#FD6705`), which §6.2 measured as the second most dominant colour in
+> the brand artwork.
 >
-> Project **category labels** sit on a glass card, which lightens their local ground
-> instead, and are the one spot that can still fall short on a bright frame. If it ever
-> shows: lighten the accent *text* token toward `#60A5FA` (~6:1 at the same worst case)
-> while keeping `#2563EB` for button fills. That was not done pre-emptively because it
-> weakens the brand-navy tie documented below.
+> §6.2 originally **rejected** orange as a site accent for a specific, still-correct
+> reason: white on `#FD6705` is **2.95:1**, which fails AA. That objection was about
+> *white text on an orange fill* — not about orange itself. It is resolved by flipping
+> the pairing: fills use `--accent-fg` (`#1A0F04`, near-black) on orange, measuring
+> **6.4:1**. Gold `#F5A524` as *text on a dark panel* measures **~6.7:1** at worst case.
+>
+> **Never put white text on `--accent-solid`.** That is the one combination §6.2 ruled
+> out and it is still ruled out.
 
 > **Why `--foreground` is now pure `#FFFFFF`.** The earlier passes used `#EDEDEF` and §3.5
 > still lists pure white as an anti-pattern — that rule was written for text on a *static*
@@ -286,18 +298,15 @@ entire column — re-derive it before you touch that gradient.
 meant to be used: as a raw `var(--accent-glow)` inside the shadow tokens in §3.3 and
 inside `<Spotlight>`'s inline `radial-gradient()`.
 
-> **Why two blues?** `#3B82F6` is bright enough to read as *text* on the page background
-> (5.1:1). `#2563EB` is dark enough for *white text on top of it* (5.0:1). Using one blue
-> for both fails WCAG AA in one direction or the other. Use the right one for the job.
-
-> **Why the accent stayed blue, not Linear's indigo.** The reference "Deep space with
-> ambient light" system specifies `#5E6AD2` (Linear's actual brand indigo) as its accent.
-> This site's blue is deliberately close to the logo's brand navy (`#052957` — see §6.2's
-> hue-distance rationale, unchanged). Swapping to indigo would have been full fidelity to
-> the reference system, but would break that accent-to-logo relationship for no real
-> gain — the ambient-lighting language works identically with either hue since it's a
-> *lightness/depth* system, not a *hue* system. That reasoning still holds under the video
-> theme, where the accent is now the only chromatic element on the page at all.
+> **Why two warm tones?** `#F5A524` is light enough to read as *text* on a dark panel
+> (~6.7:1). `#FD6705` is saturated enough to work as a *fill* under near-black text
+> (6.4:1). Neither works in the other's role. Use the right one for the job.
+>
+> **Superseded:** this pair used to be `#3B82F6` / `#2563EB`, chosen to sit at the same
+> hue as the logo's brand navy (`#052957`, §6.2). The video's gold glow is the reason it
+> moved — the blue competed with the footage rather than tying into it, and the logo's
+> orange is the closer match to what is actually on screen. The navy is still the
+> wordmark's colour; it is simply no longer the accent.
 
 **Accent budget — unchanged in spirit, widened in scope.** Exactly one accent-coloured
 element per section: the section's `<Eyebrow>` pill (`ui/eyebrow.tsx`). Also still
@@ -473,10 +482,24 @@ cards, the pipeline status panel, the contact panel. The pricing add-ons list is
 glass surface that deliberately **isn't** — it's a reference list, not a decision
 surface, so it gets the shadow/gradient treatment without the glow.
 
-### 3.7 Background video & legibility scrim (added 2026-08-27)
+### 3.7 Background video & the glass-panel system (added 2026-08-27, rewritten 2026-08-29)
 
 The current theme. One fixed, looping, muted video sits behind the entire site; every
 page is transparent and floats over it.
+
+> ### 📼 Know this before changing anything here
+> **The footage is a dark wireframe sphere with a gold glow on a NEAR-WHITE ground.**
+> 1920×1080, 10s, 6.3 MB, h264.
+>
+> Two revisions were shipped that assumed it was *dark* footage and buried it under a
+> 0.75–0.95 scrim. Both read as flat grey mush, because what was actually happening was a
+> bright, high-contrast animation being suppressed into a mid-grey wash. Inverting the
+> video to suit a dark theme was tried and rejected: `negate` + `hue-rotate` turns the
+> glowing gold core into a dark hole, destroying the one element worth featuring.
+>
+> The resolution is the inversion of the usual dark-theme approach: **leave the video
+> bright and put the text on dark panels**, rather than darkening the video so text can
+> sit on it directly.
 
 **`<BackgroundVideo />`** (`ui/background-video.tsx`) — rendered once in `layout.tsx`,
 **outside `{children}`**, which matters: being outside `template.tsx` means client-side
@@ -485,35 +508,57 @@ instead of restarting on every page. `position: fixed`, `-z-10`, so it paints ab
 `<body>`'s background-color but below all page content and no section needs a `z-index`
 of its own.
 
-Attributes are `autoPlay muted loop playsInline preload="metadata"`, plus `tabIndex={-1}`
-and `aria-hidden` on the wrapper — it is decoration and must never take focus or be
-announced.
+Attributes are `autoPlay muted loop playsInline preload="metadata"` and
+`poster="/video-poster.jpg"` (a 54 KB first frame, generated with ffmpeg, so there is no
+blank gap before the video decodes), plus `tabIndex={-1}` and `aria-hidden` on the
+wrapper — it is decoration and must never take focus or be announced.
 
-**The scrim is load-bearing, not decoration.** A gradient overlay sits between the video
-and the content:
+The video carries `filter: saturate(1.25) contrast(1.06)` to push the gold, and a
+`mix-blend-soft-light` radial wash of `--accent-glow` over it so the whole canvas leans
+warm rather than neutral grey.
+
+**The overlay is an edge vignette, not a legibility scrim:**
 
 ```
 linear-gradient(180deg,
-  rgba(5,5,6,0.95) 0%,     /* under the fixed header */
-  rgba(5,5,6,0.87) 38%,    /* lightest point — the figure §3.1 is derived from */
-  rgba(5,5,6,0.89) 70%,
-  rgba(5,5,6,0.96) 100%)   /* under the footer */
+  rgba(5,5,6,0.72) 0%,     /* under the fixed header */
+  rgba(5,5,6,0.14) 22%,
+  rgba(5,5,6,0.10) 55%,    /* essentially clear — the sphere reads at full brightness */
+  rgba(5,5,6,0.30) 82%,
+  rgba(5,5,6,0.75) 100%)   /* under the footer */
 ```
 
-> **Deepened 2026-08-29 (§7.21).** The original range was `0.88 / 0.75 / 0.78 / 0.90`,
-> which left the page reading as washed-out grey rather than near-black — content sat too
-> close to its own background in value. Every figure in §3.1 was re-derived for the new
-> range. Do not revert to the old numbers without re-deriving them again.
+It exists so the header and footer have something to meet at the edges. **It carries no
+accessibility load** and can be tuned freely for looks — which is the opposite of the
+rule that stood here before 2026-08-29.
 
-Every contrast number in §3.1 is computed at that 0.75 point over a hypothetical
-pure-white video frame. **Reducing any of those opacities silently breaks WCAG AA across
-the whole site**, on footage we don't control and could be re-cut at any time. If the
-video is ever swapped, the scrim stays or gets darker, never lighter.
+**Legibility lives in `glass-panel` instead.** Defined once in `globals.css` as a Tailwind
+`@utility`:
 
-Glass cards additionally carry `backdrop-blur-xl`. That is also not cosmetic: without it,
-body copy sits directly over moving footage and becomes genuinely hard to read even at
-passing contrast ratios, because the *motion* behind the text is the problem, not the
-luminance.
+```css
+@utility glass-panel {
+  background-color: var(--panel);          /* rgba(6,6,8,0.85) — dark, not white */
+  backdrop-filter: blur(20px) saturate(140%);
+}
+```
+
+Compose it with `border border-line` and `shadow-card`; `<Panel>` (`ui/panel.tsx`) bundles
+all three for plain text blocks, while cards that need their own hover/spotlight wrapper
+apply the utility directly. **Every text block on the site sits on one.** The blur is not
+cosmetic: without it, motion behind the text is distracting even at passing contrast
+ratios — the movement is the problem, not the luminance.
+
+**The two rules that matter here:**
+1. **Never put body text directly on the page background.** It will be white-on-white
+   whenever the sphere drifts away from that spot. Wrap it in a `<Panel>`.
+2. **Panels are dark-tinted, never white-tinted.** A white-glass panel over a white video
+   is invisible. This is the reverse of what the same components did before 2026-08-29,
+   so old class strings (`bg-linear-to-b from-white/10 to-white/4`) are actively wrong now.
+
+**Panels are deliberately not full-width.** The hero's caps at `680px` and is left
+aligned so the sphere stays visible beside it; Pricing's subhead blocks are
+`inline-block`. If panels grow to fill every container the video stops being a centrepiece
+and becomes a hairline border around the page.
 
 **Reduced motion.** The video is a client component purely so it can honour
 `prefers-reduced-motion` — it pauses on a reduced-motion preference, leaving a still
@@ -523,9 +568,9 @@ hydration mismatch. The cost is a few frames of playback before the effect pause
 which is the better trade.
 
 **Failure modes are all handled.** If the video is blocked, fails, or autoplay is refused
-(iOS Low Power Mode), the first frame or the flat `--background` shows through and the
-site is still fully legible — no layout shift and no dependency on the video for contrast,
-since the scrim is a separate opaque-ish layer.
+(iOS Low Power Mode), the poster frame or the flat `--background` shows through. Either
+way the site stays fully legible: contrast comes from the panels, which are opaque of
+their own accord and do not depend on the video or the vignette at all.
 
 ---
 
@@ -2353,6 +2398,40 @@ Four small changes off the back of looking at the built site.
    home page cannot drop out of the sitemap if it is ever removed from the nav, and the
    `Set` drops the duplicate now that it appears in both.
 
+### 7.22 — Video as centrepiece: dark panels, gold accent (added 2026-08-29)  ✅ DONE
+
+**This reverses §7.18 and §7.21's treatment of the background.** Both of those assumed the
+footage was dark and scrimmed it heavily; it is actually bright (near-white ground), so
+they were suppressing the site's most interesting element into grey. Full reasoning and
+the two standing rules are in §3.7 — read that before touching the video or a panel.
+
+What changed:
+
+- **Scrim → edge vignette.** `0.95/0.87/0.89/0.96` → `0.72/0.14/0.10/0.30/0.75`. The
+  middle of the page is now essentially clear. Video also gains
+  `filter: saturate(1.25) contrast(1.06)` and a `mix-blend-soft-light` gold wash.
+- **Glass inverted, white-tinted → dark-tinted**, and centralised as the `glass-panel`
+  `@utility` plus a `<Panel>` component (`ui/panel.tsx`). This replaced nine copies of a
+  long `bg-linear-to-b from-white/10 …` class string; those are now actively wrong, not
+  merely verbose.
+- **Every floating text block moved onto a panel** — hero, the Projects and Pricing
+  headers, Pricing's two subhead blocks, Add-Ons, How We Work, Pipeline's left column,
+  About. Contact and the cards were already panels and only needed the fill swapped.
+- **Header is never transparent now.** Both scroll states are dark glass
+  (`bg-background-deep/55` → `/88`); a see-through header over bright footage put white
+  nav text on a near-white ground.
+- **Accent blue → gold** (`#F5A524` text / `#FD6705` fills / near-black `--accent-fg`).
+  See §3.1's box on why this resolves §6.2's original objection to orange rather than
+  ignoring it.
+- **Poster added** — `public/video-poster.jpg`, 54 KB, first frame via ffmpeg.
+- **Hero H1 dropped one step** (`lg:text-6xl`, was `lg:text-7xl xl:text-[5.25rem]`).
+  Inside a 680px panel the larger scale wrapped to five ragged lines.
+
+> **Verified by compositing, not by eye.** The panel-over-footage assumption was checked
+> before shipping by rendering a real frame with an 85% panel and sample text over it in
+> ffmpeg. If you change `--panel`, do the same — the frames are worth looking at, since
+> the sphere moves and the ground brightness varies across the loop.
+
 ---
 
 ## 8. MOTION SPEC
@@ -2447,7 +2526,7 @@ Also required: no horizontal scroll at 320px · nothing hidden behind the fixed 
 - [x] Only `opacity` / `transform` animated — *two narrow, documented exceptions: the Hero's accent-phrase `text-shimmer` animates `background-position` on two words of text (§3.2's R9 note), and the spotlight writes CSS custom properties per pointer-move rather than animating a CSS property at all (event-driven, no animation loop).*
 - [x] Background video is `position: fixed` (no layout/paint cost on scroll), `preload="metadata"` (not `auto` — the full file is never eagerly downloaded), and lives in `layout.tsx` outside `template.tsx` so client-side navigation never remounts or re-fetches it.
 - [x] Page transitions animate `opacity`/`transform` only, and the curtain is opaque rather than a full-viewport animated `backdrop-filter` (§7.19).
-- [ ] ⚠️ **Background video weight not audited.** It is a third-party CDN asset of unknown size fetched on every cold load. Check its transfer size and consider a `poster` frame — *needs a browser / network panel.*
+- [x] Background video weight audited: **6.28 MB**, 1920×1080, 10s, h264, served from CloudFront with range support. Accepted as-is for a hero background; a 54 KB `poster` frame covers the load gap. If it ever needs trimming, a downscaled variant for narrow viewports is the obvious next step.
 - [x] No external scripts, no analytics, no icon-font, no CSS-in-JS runtime.
 - [x] Images served through `next/image` — *optimiser returns HTTP 200 for all three*
 - [ ] ⚠️ Project screenshots optimised, < 600 KB each. — **blocked: the three files are placeholders.** Re-check after swapping in the real screenshots.
@@ -2506,10 +2585,12 @@ These need a real browser. Nothing below has been verified.
 - [ ] Card badges read `CHAR MEEM / 01`, `ANCHOR / 02`, `LUMBER WIZ / 03` top-to-bottom.
 
 **Interaction**
-- [ ] Header is transparent at the top and turns frosted + hairline-bordered after ~24px of scroll.
+- [ ] Header is dark glass **even at the top of the page** (never see-through) and deepens after ~24px of scroll.
 - [ ] Below `lg`: header shows the wordmark + hamburger (plus `Let's talk` from `md` up). Tapping it opens a dropdown with all six links stacked and a full-width `Let's talk` at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
 - [ ] **The background video plays, is muted, loops seamlessly, and covers the viewport without distortion at every width.** It keeps playing *uninterrupted* while navigating between pages — it must not restart or flash.
-- [ ] Text is comfortably readable over the *brightest* part of the video loop on every page, especially the pricing tables. If any of it is marginal, the scrim in `ui/background-video.tsx` is too light (§3.7).
+- [ ] **The video is genuinely vivid** — the sphere and its gold glow read clearly, and the page does not look like grey wallpaper. This is the whole point of §7.22; if it looks dull, the vignette or a panel has crept back up in opacity.
+- [ ] **No text sits directly on the video anywhere.** Scroll every page and look for a stray heading or paragraph outside a panel — that is the failure mode this theme is prone to, and it only shows when the sphere happens to drift under that spot.
+- [ ] On the hero, the panel leaves the right-hand side clear so the sphere is visible beside the copy (desktop widths).
 - [ ] Navigating between pages plays the curtain transition: the content area wipes upward while the new page fades in, and the **header stays put** throughout.
 - [ ] `Home` / `Projects` / `Pipeline` / `Pricing` / `About` / `Contact` / `Let's talk` each navigate to the right route, and the active link is visibly highlighted once there (including `Home` on `/`).
 - [ ] **On `/about`** — the shortest page — the footer sits flush at the bottom of the viewport, not floating mid-screen, and no video shows below it. Same check at a tall window (1440px+).

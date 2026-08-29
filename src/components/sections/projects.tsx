@@ -13,7 +13,7 @@ export function Projects() {
       className="mx-auto w-full max-w-[1200px] scroll-mt-24 px-6 py-24 md:px-8 md:py-32 lg:px-10 lg:py-40"
     >
       <Reveal>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="glass-panel flex flex-col gap-3 rounded-2xl border border-line px-6 py-7 shadow-card sm:flex-row sm:items-end sm:justify-between md:px-8 md:py-8">
           <h1 className="bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-transparent md:text-5xl">
             Featured Projects
           </h1>

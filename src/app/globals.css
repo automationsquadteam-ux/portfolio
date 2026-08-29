@@ -5,22 +5,28 @@
 @import url("https://db.onlinewebfonts.com/c/e66905e07608167a84e6ad52f638c3c6?family=Helvetica+Now+Var");
 @import "tailwindcss";
 
-/* ───────────────── Raw palette — white-on-video ──────────────────────────── */
-/* The page has no opaque background of its own. A fixed <BackgroundVideo>
-   sits behind everything (see ui/background-video.tsx) and every section is
-   transparent so it shows through. Surfaces and borders are translucent
-   white; text is white at descending opacities rather than grey hex values,
-   so it reads against moving footage instead of against a fixed dark ground.
+/* ───────────────── Raw palette — dark glass on a bright video ────────────── */
+/* The background video is a dark wireframe sphere with a gold glow on a
+   NEAR-WHITE ground (see ui/background-video.tsx). That single fact drives
+   this whole palette:
 
-   Contrast is guaranteed by the scrim inside BackgroundVideo, not by luck:
-   at its lightest the scrim is 87% #050506, so even a pure-white video frame
-   composites to ~#252525. White then measures ~15.3:1, --muted ~11.4:1 and
-   --subtle ~6.8:1.
+   1. The video is left bright and barely scrimmed — it is the centrepiece,
+      not wallpaper. Suppressing it under a heavy dark scrim is what made the
+      previous revision read as grey mush.
+   2. Because the page's backdrop is therefore LIGHT and moving, no body text
+      ever sits directly on it. Every text block lives on a dark glass panel
+      (`glass-panel` below, or <Panel>). Panels are dark-tinted, not the
+      white-tinted glass a dark-background theme would use — a white panel
+      over a white video is invisible.
+   3. The accent is gold/amber, tying the video's glow to the logo's orange
+      (#FD6705, BUILD_SPEC §6.2). Orange was originally rejected as an accent
+      because white-on-orange is 2.95:1 — so fills pair with NEAR-BLACK text
+      (--accent-fg), which measures 6.4:1, rather than white.
 
-   --accent as *text* is the tight one: ~4.2:1 on that worst-case frame, which
-   is why the Eyebrow pill sits on a darkened chip (bg-background/60) rather
-   than a lightening white one — that lifts it back to ~5.1:1. Lowering the
-   scrim breaks all of these — see BUILD_SPEC §3.7 before touching it. */
+   Contrast is guaranteed by --panel, not by the scrim. Worst case is a
+   pure-white video frame under an 85% panel, compositing to ~#2C2C2C:
+   white ~13.9:1, --muted ~9.9:1, --subtle ~6.2:1, --accent (gold) ~6.7:1.
+   Lightening --panel invalidates all four — see BUILD_SPEC §3.7. */
 :root {
   color-scheme: dark;
 
@@ -29,24 +35,26 @@
   --background: #050506;
   --background-deep: #020203;
 
-  /* Glass. Heavier than a flat-dark theme would need — a 5% white panel is
-     invisible over video, and these also carry backdrop-blur at the call site. */
-  --surface: rgba(255, 255, 255, 0.06);
-  --surface-hover: rgba(255, 255, 255, 0.1);
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  /* Dark glass. Every panel and card is built from this plus backdrop-blur;
+     it is the surface that makes white text safe over a bright video. */
+  --panel: rgba(6, 6, 8, 0.85);
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-hover: rgba(255, 255, 255, 0.12);
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.22);
 
   --foreground: #ffffff;
-  --muted: rgba(255, 255, 255, 0.85);
-  --subtle: rgba(255, 255, 255, 0.62);
+  --muted: rgba(255, 255, 255, 0.82);
+  --subtle: rgba(255, 255, 255, 0.6);
 
-  --accent: #3b82f6;
-  --accent-solid: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-fg: #ffffff;
+  /* Gold for text/borders; brand orange for fills, with near-black on top. */
+  --accent: #f5a524;
+  --accent-solid: #fd6705;
+  --accent-hover: #e05a02;
+  --accent-fg: #1a0f04;
   /* not exposed as Tailwind utilities — referenced directly (var(--accent-glow))
      inside the shadow tokens below and the spotlight overlay. */
-  --accent-glow: rgba(59, 130, 246, 0.3);
+  --accent-glow: rgba(245, 165, 36, 0.35);
 }
 
 /* ── Expose them to Tailwind as bg-, text- and border- utilities ─────────── */
@@ -56,6 +64,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-background-deep: var(--background-deep);
+  --color-panel: var(--panel);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-line: var(--line);
@@ -93,6 +102,20 @@
   --shadow-cta-hover: 0 0 0 1px rgba(59, 130, 246, 0.65), 0 6px 20px
     rgba(59, 130, 246, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
   --shadow-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ─────────────────────────── Glass panel utility ─────────────────────────── */
+/* The one surface treatment every text block and card is built from. Defined
+   once here rather than repeated as a long utility string at nine call sites,
+   because it now carries real accessibility weight: the blur is what stops
+   moving footage showing through behind body copy, and the fill is what every
+   contrast figure above is computed against. Compose with `border border-line`
+   and `shadow-card` at the call site; both still work as normal utilities,
+   as do variants (`hover:`, `md:`) on this one. */
+@utility glass-panel {
+  background-color: var(--panel);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
 /* ───────────────────────────────── Base ──────────────────────────────────── */

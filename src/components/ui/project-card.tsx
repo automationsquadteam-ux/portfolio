@@ -21,7 +21,7 @@ export function ProjectCard({ project }: { project: Project }) {
       transition={HOVER_SPRING}
       className={[
         "group/spot group relative isolate overflow-hidden rounded-2xl border border-line",
-        "bg-linear-to-b from-white/10 to-white/4 p-2 shadow-card backdrop-blur-xl",
+        "glass-panel p-2 shadow-card",
         "transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-card-hover",
         project.wide ? "md:col-span-2" : "",
       ].join(" ")}

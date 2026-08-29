@@ -74,7 +74,7 @@ function ServiceCard({ service }: { service: CoreService }) {
       onPointerMove={onPointerMove}
       className={[
         "group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line",
-        "bg-linear-to-b from-white/10 to-white/4 p-6 shadow-card backdrop-blur-xl transition-shadow duration-300 hover:shadow-card-hover",
+        "glass-panel p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover",
         spanClass[service.span],
       ].join(" ")}
     >
@@ -102,7 +102,7 @@ function BundleCard({ bundle }: { bundle: Bundle }) {
     <article
       ref={ref}
       onPointerMove={onPointerMove}
-      className="group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 p-6 shadow-card backdrop-blur-xl transition-shadow duration-300 hover:shadow-card-hover md:p-8"
+      className="group/spot relative isolate flex flex-col overflow-hidden rounded-2xl border border-line glass-panel p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover md:p-8"
     >
       <Spotlight />
       <h3 className="text-xl font-semibold tracking-[-0.02em]">
@@ -151,7 +151,7 @@ export function Pricing() {
     >
       {/* ── Header + PDF download ────────────────────────────────────── */}
       <Reveal>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="glass-panel flex flex-col gap-6 rounded-2xl border border-line px-6 py-8 shadow-card sm:flex-row sm:items-end sm:justify-between md:px-10 md:py-10">
           <div>
             <Eyebrow>Pricing</Eyebrow>
             <h1 className="mt-6 max-w-[20ch] bg-linear-to-b from-foreground to-foreground/75 bg-clip-text text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-transparent md:text-5xl">
@@ -162,29 +162,35 @@ export function Pricing() {
             </p>
           </div>
 
-          <a
-            href={ratecard.href}
-            download={ratecard.downloadName}
-            className={buttonClass("secondary", "shrink-0")}
-          >
-            <Download className="size-4" aria-hidden="true" />
-            Download rate card
-            <span className="sr-only"> (PDF)</span>
-          </a>
+          <div className="flex shrink-0 flex-col gap-3 sm:items-end">
+            <a
+              href={ratecard.href}
+              download={ratecard.downloadName}
+              className={buttonClass("secondary")}
+            >
+              <Download className="size-4" aria-hidden="true" />
+              Download rate card
+              <span className="sr-only"> (PDF)</span>
+            </a>
+            <p className="font-mono text-[11px] tracking-[0.04em] text-subtle">
+              Updated {pricingUpdated}
+            </p>
+          </div>
         </div>
-        <p className="mt-4 font-mono text-[11px] tracking-[0.04em] text-subtle">
-          Updated {pricingUpdated}
-        </p>
       </Reveal>
 
       {/* ── Core services — asymmetric bento grid ────────────────────── */}
       <Reveal delay={0.08} className="mt-20 md:mt-24">
-        <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
-          Core Services
-        </span>
-        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
-          Pick what you need
-        </h2>
+        {/* Subhead blocks get their own compact panel rather than a full-width
+            one, so the video still shows between them and the grids below. */}
+        <div className="glass-panel inline-block rounded-2xl border border-line px-6 py-5 shadow-card">
+          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
+            Core Services
+          </span>
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+            Pick what you need
+          </h2>
+        </div>
 
         <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-16 md:gap-6 lg:grid-cols-6">
           {coreServices.map((service) => (
@@ -195,16 +201,18 @@ export function Pricing() {
 
       {/* ── Bundles ───────────────────────────────────────────────────── */}
       <Reveal delay={0.08} className="mt-20 md:mt-24">
-        <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
-          Bundles
-        </span>
-        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
-          Combine services and save
-        </h2>
-        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-muted">
-          Each bundle below costs less than buying the same services
-          separately.
-        </p>
+        <div className="glass-panel inline-block rounded-2xl border border-line px-6 py-5 shadow-card">
+          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
+            Bundles
+          </span>
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+            Combine services and save
+          </h2>
+          <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-muted">
+            Each bundle below costs less than buying the same services
+            separately.
+          </p>
+        </div>
 
         <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:gap-6 lg:grid-cols-2">
           {bundles.map((bundle) => (
@@ -218,7 +226,7 @@ export function Pricing() {
         delay={0.08}
         className="mt-20 grid grid-cols-1 gap-8 md:mt-24 md:grid-cols-12 md:gap-6"
       >
-        <div className="md:col-span-5">
+        <div className="glass-panel h-fit rounded-2xl border border-line px-6 py-7 shadow-card md:col-span-5">
           <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
             Add-Ons
           </span>
@@ -226,7 +234,7 @@ export function Pricing() {
             Extend any service
           </h2>
 
-          <div className="mt-6 rounded-2xl border border-line bg-linear-to-b from-white/10 to-white/4 p-2 shadow-card backdrop-blur-xl">
+          <div className="mt-6 rounded-xl border border-line bg-white/5 p-2">
             <ul className="divide-y divide-line">
               {addOns.map((addOn) => (
                 <li
@@ -245,7 +253,7 @@ export function Pricing() {
           </div>
         </div>
 
-        <div className="md:col-span-7 md:pt-[3.25rem]">
+        <div className="glass-panel h-fit rounded-2xl border border-line px-6 py-7 shadow-card md:col-span-7">
           <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
             How We Work
           </span>
