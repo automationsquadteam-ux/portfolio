@@ -76,7 +76,7 @@ export function SiteHeader() {
         {/* Inline links appear at lg, not md: five items plus the wordmark and
             the CTA don't fit comfortably in a 768px bar. Below that they live
             in the menu panel. */}
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-6 lg:flex xl:gap-8">
           {navLinks.map((link) => {
             const active = segment === link.segment;
             return (

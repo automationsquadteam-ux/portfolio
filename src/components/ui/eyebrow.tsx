@@ -23,7 +23,7 @@ export function Eyebrow({
   as?: "span" | "h1" | "h2";
 }) {
   return (
-    <Tag className="inline-flex items-center rounded-full border border-accent/30 bg-surface px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase backdrop-blur-md">
+    <Tag className="inline-flex items-center rounded-full border border-accent/30 bg-background/60 px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase backdrop-blur-md">
       {children}
     </Tag>
   );

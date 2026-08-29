@@ -40,7 +40,7 @@ export function Hero() {
           initial={{ opacity: 0, y: reduce ? 0 : 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05, ease: EASE }}
-          className="inline-flex items-center rounded-full border border-accent/30 bg-surface px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase backdrop-blur-md md:text-xs"
+          className="inline-flex items-center rounded-full border border-accent/30 bg-background/60 px-3 py-1 font-mono text-[11px] font-medium tracking-[0.18em] text-accent uppercase backdrop-blur-md md:text-xs"
         >
           Software House · AI Automations · Web Development
         </motion.span>

@@ -60,12 +60,17 @@ export function BackgroundVideo() {
       />
 
       {/* Legibility scrim — darkest at the top and bottom edges, where the
-          fixed header and the footer sit. */}
+          fixed header and the footer sit.
+
+          Deepened 2026-08-29: the previous 0.75–0.90 range left the page
+          reading washed-out grey rather than near-black, so content sat too
+          close to its background in value. The video is still legible as
+          motion behind it; it just no longer competes with the type. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(5,5,6,0.88) 0%, rgba(5,5,6,0.75) 38%, rgba(5,5,6,0.78) 70%, rgba(5,5,6,0.9) 100%)",
+            "linear-gradient(180deg, rgba(5,5,6,0.95) 0%, rgba(5,5,6,0.87) 38%, rgba(5,5,6,0.89) 70%, rgba(5,5,6,0.96) 100%)",
         }}
       />
     </div>

@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 
+// Opaque, not translucent: the footer is the one surface that should read as a
+// solid edge to the page rather than letting the video through. The
+// sticky-footer flex layout that pins it to the viewport bottom on short pages
+// lives in layout.tsx.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-background-deep/70 backdrop-blur-xl">
+    <footer className="relative border-t border-line bg-background-deep">
       <div className="mx-auto w-full max-w-[1200px] px-6 py-10 md:px-8 lg:px-10">
         {/* Every route reachable from every page — the top nav collapses into
             a menu below lg, so this is also the persistent crawlable path

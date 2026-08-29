@@ -61,10 +61,11 @@ export const leadsDashboard = {
 /**
  * Routes, not hash anchors — the site became multi-page on 2026-08-27.
  * `segment` is what `useSelectedLayoutSegment()` returns for that route and
- * is what drives the header's active state; the home route has no segment
- * (the hook returns null there), which is why it isn't in this list.
+ * is what drives the header's active state. Home's segment is `null`, which is
+ * exactly what the hook returns on `/`, so the same equality check covers it.
  */
 export const navLinks = [
+  { label: "Home", href: "/", segment: null },
   { label: "Projects", href: "/projects", segment: "projects" },
   { label: "Pipeline", href: "/pipeline", segment: "pipeline" },
   { label: "Pricing", href: "/pricing", segment: "pricing" },

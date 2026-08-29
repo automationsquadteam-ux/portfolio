@@ -13,10 +13,14 @@
    so it reads against moving footage instead of against a fixed dark ground.
 
    Contrast is guaranteed by the scrim inside BackgroundVideo, not by luck:
-   at its lightest the scrim is 75% #050506, so even a pure-white video frame
-   composites to ~#373737. White then measures ~8.9:1, --muted ~7:1 and
-   --subtle ~4.6:1. Lowering the scrim breaks those figures — see BUILD_SPEC
-   §3.7 before touching it. */
+   at its lightest the scrim is 87% #050506, so even a pure-white video frame
+   composites to ~#252525. White then measures ~15.3:1, --muted ~11.4:1 and
+   --subtle ~6.8:1.
+
+   --accent as *text* is the tight one: ~4.2:1 on that worst-case frame, which
+   is why the Eyebrow pill sits on a darkened chip (bg-background/60) rather
+   than a lightening white one — that lifts it back to ~5.1:1. Lowering the
+   scrim breaks all of these — see BUILD_SPEC §3.7 before touching it. */
 :root {
   color-scheme: dark;
 

@@ -33,6 +33,7 @@ or the palette, because the contrast figures in §3.1 depend on both.
 | §3.7 / §7.18 Video-background theme (added 2026-08-27) | ✅ Built — fixed background video + legibility scrim, white-on-video palette, Helvetica Now Var. Replaces the ambient-blob system from §7.16 |
 | §7.19 Multi-page conversion + route transitions (added 2026-08-27) | ✅ Built — 6 routes, all prerendered static, each with one `h1`, its own title/description/canonical. Curtain-wipe page transition via `template.tsx` |
 | §7.20 Generated sitemap (added 2026-08-27) | ✅ Built — `/sitemap.xml` lists all six routes; stale `public/sitemap.xml` that was shadowing it deleted. `robots.ts` needed no change |
+| §7.21 Scrim depth, sticky footer, Home nav (added 2026-08-29) | ✅ Built — scrim deepened and §3.1 contrast re-derived, footer pinned to the viewport bottom and made opaque, `Home` added to the nav |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -237,27 +238,40 @@ Dark is the only theme. Surfaces and borders are translucent white, not flat hex
 background video shows through every card.
 
 **Contrast is guaranteed by the scrim, not by the video.** The figures below are computed
-against the scrim's *lightest* point (75% `#050506`) composited over a worst-case
-pure-white video frame, i.e. `~#373737`. That is the floor: any darker frame only
+against the scrim's *lightest* point (87% `#050506`) composited over a worst-case
+pure-white video frame, i.e. `~#252525`. That is the floor: any darker frame only
 improves them. Lowering the scrim opacity in `ui/background-video.tsx` invalidates this
 entire column — re-derive it before you touch that gradient.
 
 | Token | Value | Tailwind class | Used for | Contrast (worst case) |
 | --- | --- | --- | --- | --- |
 | `--background` | `#050506` | `bg-background` | Painted behind the video: covers the pre-decode moment, and is the permanent fallback if it never loads | — |
-| `--background-deep` | `#020203` | `bg-background-deep` | Footer ground (at 70% + backdrop blur) and the page-transition curtain | — |
+| `--background-deep` | `#020203` | `bg-background-deep` | Footer ground (fully opaque) and the page-transition curtain | — |
 | `--surface` | `rgba(255,255,255,0.06)` | `bg-surface` | Card backgrounds — translucent so the video shows through | — |
 | `--surface-hover` | `rgba(255,255,255,0.1)` | `bg-surface-hover` | Card + button hover | — |
 | `--line` | `rgba(255,255,255,0.1)` | `border-line` | Hairline borders, dividers | — |
 | `--line-strong` | `rgba(255,255,255,0.18)` | `border-line-strong` | Border on hover | — |
-| `--foreground` | `#FFFFFF` | `text-foreground` | Headings, primary text | ~8.9:1 ✅ |
-| `--muted` | `rgba(255,255,255,0.85)` | `text-muted` | Body copy, descriptions | ~7:1 ✅ |
-| `--subtle` | `rgba(255,255,255,0.62)` | `text-subtle` | Meta labels, footer, tags | ~4.6:1 — **≥14px only** |
-| `--accent` | `#3B82F6` | `text-accent` | Accent **text** (eyebrows, category labels) | 5.1:1 ✅ |
+| `--foreground` | `#FFFFFF` | `text-foreground` | Headings, primary text | ~15.3:1 ✅ |
+| `--muted` | `rgba(255,255,255,0.85)` | `text-muted` | Body copy, descriptions | ~11.4:1 ✅ |
+| `--subtle` | `rgba(255,255,255,0.62)` | `text-subtle` | Meta labels, footer, tags | ~6.8:1 — **≥14px only** |
+| `--accent` | `#3B82F6` | `text-accent` | Accent **text** (eyebrows, category labels) | ~4.2:1 ⚠️ — see below |
 | `--accent-solid` | `#2563EB` | `bg-accent-solid` | Solid button **fill** (with white text) | 5.0:1 ✅ |
 | `--accent-hover` | `#1D4ED8` | `bg-accent-hover` | Solid button hover fill | ✅ |
 | `--accent-fg` | `#FFFFFF` | `text-accent-fg` | Text on top of accent fill | ✅ |
 | `--accent-glow` | `rgba(59,130,246,0.3)` | *(not a Tailwind utility — see below)* | Spotlight glow, shadow glows | — |
+
+> ### ⚠️ `--accent` as text is the tightest value on the page
+> At the worst case above it measures **~4.2:1**, just under the 4.5:1 AA floor for
+> small text. Two things keep that from biting in practice: it requires a *fully white*
+> video frame, and the two places accent text appears are both mitigated —
+> the `<Eyebrow>` pill sits on a **darkened** chip (`bg-background/60`, not the lightening
+> `bg-surface` it used before 2026-08-29), which lifts it to ~5.1:1.
+>
+> Project **category labels** sit on a glass card, which lightens their local ground
+> instead, and are the one spot that can still fall short on a bright frame. If it ever
+> shows: lighten the accent *text* token toward `#60A5FA` (~6:1 at the same worst case)
+> while keeping `#2563EB` for button fills. That was not done pre-emptively because it
+> weakens the brand-navy tie documented below.
 
 > **Why `--foreground` is now pure `#FFFFFF`.** The earlier passes used `#EDEDEF` and §3.5
 > still lists pure white as an anti-pattern — that rule was written for text on a *static*
@@ -480,11 +494,16 @@ and the content:
 
 ```
 linear-gradient(180deg,
-  rgba(5,5,6,0.88) 0%,     /* under the fixed header */
-  rgba(5,5,6,0.75) 38%,    /* lightest point — the figure §3.1 is derived from */
-  rgba(5,5,6,0.78) 70%,
-  rgba(5,5,6,0.90) 100%)   /* under the footer */
+  rgba(5,5,6,0.95) 0%,     /* under the fixed header */
+  rgba(5,5,6,0.87) 38%,    /* lightest point — the figure §3.1 is derived from */
+  rgba(5,5,6,0.89) 70%,
+  rgba(5,5,6,0.96) 100%)   /* under the footer */
 ```
+
+> **Deepened 2026-08-29 (§7.21).** The original range was `0.88 / 0.75 / 0.78 / 0.90`,
+> which left the page reading as washed-out grey rather than near-black — content sat too
+> close to its own background in value. Every figure in §3.1 was re-derived for the new
+> range. Do not revert to the old numbers without re-deriving them again.
 
 Every contrast number in §3.1 is computed at that 0.75 point over a hypothetical
 pure-white video frame. **Reducing any of those opacities silently breaks WCAG AA across
@@ -2307,6 +2326,33 @@ Design notes:
 Also fixed in this step: `manifest.ts` still carried `background_color` / `theme_color` of
 `#0A0A0A` from the pre-video palette. Both now track `--background` (`#050506`).
 
+### 7.21 — Scrim depth, sticky footer, Home nav (added 2026-08-29)  ✅ DONE
+
+Four small changes off the back of looking at the built site.
+
+1. **Scrim deepened** — `0.88/0.75/0.78/0.90` → `0.95/0.87/0.89/0.96`. The page was
+   reading washed-out grey. All §3.1 contrast figures re-derived (they improved across the
+   board; see the accent caveat box there, which is new and honest about the one tight
+   value).
+2. **Eyebrow chip darkened** — `bg-surface` → `bg-background/60`. The pill's background was
+   *lightening* the ground under the accent text, which is the wrong direction for the
+   page's tightest contrast pair. Applied in both `ui/eyebrow.tsx` and Hero's inline copy
+   of the same markup (they are still two places — see the note in `eyebrow.tsx`).
+3. **Sticky footer** — `layout.tsx` body is now `flex min-h-dvh flex-col` with
+   `flex-1` on `<main>`. On short pages (`/about` is the obvious one) the footer is pushed
+   to the bottom edge instead of floating mid-viewport with video showing below it. The
+   footer itself also went **fully opaque** (`bg-background-deep`, dropping the `/70` +
+   `backdrop-blur-xl`) so it reads as a solid edge to the page rather than another glass
+   panel.
+4. **`Home` added to the nav**, first item. Its `segment` is `null`, which is exactly what
+   `useSelectedLayoutSegment()` returns on `/`, so the existing `segment === link.segment`
+   check gives it a correct active state with no special-casing. Desktop nav gap tightened
+   to `gap-6 xl:gap-8` to fit six items at `lg`.
+
+   `sitemap.ts` now dedupes via a `Set` — `"/"` is still prepended unconditionally so the
+   home page cannot drop out of the sitemap if it is ever removed from the nav, and the
+   `Set` drops the duplicate now that it appears in both.
+
 ---
 
 ## 8. MOTION SPEC
@@ -2342,7 +2388,7 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 | --- | --- | --- | --- |
 | Container padding | `px-6` | `px-8` | `px-10` |
 | Header height | 64px | 72px | 72px |
-| Header nav links | hidden — hamburger menu | **hidden — hamburger menu** (changed 2026-08-27, five items don't fit) | visible inline at `lg` |
+| Header nav links | hidden — hamburger menu | **hidden — hamburger menu** (changed 2026-08-27; six items since 2026-08-29) | visible inline at `lg` |
 | Header right | hamburger toggle only | `Let's talk` button + hamburger toggle | `Let's talk` button |
 | Hero H1 | 44px | 60px | 72px → 84px at xl |
 | Hero buttons | wrap to 2 rows if needed | inline | inline |
@@ -2360,15 +2406,15 @@ Breakpoints (Tailwind defaults): `sm 640` · `md 768` · `lg 1024` · `xl 1280`.
 **Mobile navigation (revised 2026-08-26 §7.16, breakpoint moved 2026-08-27 §7.19).** The
 original build deliberately shipped *without* a hamburger menu (three anchors didn't
 justify one). That decision is superseded: the reference design system specifies the
-pattern explicitly, and the nav has since grown to five items. Below `lg` the header shows
+pattern explicitly, and the nav has since grown to six items. Below `lg` the header shows
 the wordmark plus a `Menu`/`X` toggle (`site-header.tsx`); tapping it drops an animated
 panel (`opacity`/`y`, 0.2s) over a blurred `bg-background/70 backdrop-blur-xl` header,
-with all five nav links stacked vertically and a full-width `Let's talk` primary button at
+with all six nav links stacked vertically and a full-width `Let's talk` primary button at
 the bottom. The panel closes on link click (handled in the link's `onClick` — **not** in a
 `useEffect` on the route segment; the `react-hooks/set-state-in-effect` lint rule
 correctly rejects that as a cascading render).
 
-The inline links moved from `md` to `lg` because five links plus the wordmark plus the CTA
+The inline links moved from `md` to `lg` because six links plus the wordmark plus the CTA
 do not fit a 768px bar. `Let's talk` still appears from `md` up.
 
 Also required: no horizontal scroll at 320px · nothing hidden behind the fixed header
@@ -2461,11 +2507,12 @@ These need a real browser. Nothing below has been verified.
 
 **Interaction**
 - [ ] Header is transparent at the top and turns frosted + hairline-bordered after ~24px of scroll.
-- [ ] Below `lg`: header shows the wordmark + hamburger (plus `Let's talk` from `md` up). Tapping it opens a dropdown with all five links stacked and a full-width `Let's talk` at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
+- [ ] Below `lg`: header shows the wordmark + hamburger (plus `Let's talk` from `md` up). Tapping it opens a dropdown with all six links stacked and a full-width `Let's talk` at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
 - [ ] **The background video plays, is muted, loops seamlessly, and covers the viewport without distortion at every width.** It keeps playing *uninterrupted* while navigating between pages — it must not restart or flash.
 - [ ] Text is comfortably readable over the *brightest* part of the video loop on every page, especially the pricing tables. If any of it is marginal, the scrim in `ui/background-video.tsx` is too light (§3.7).
 - [ ] Navigating between pages plays the curtain transition: the content area wipes upward while the new page fades in, and the **header stays put** throughout.
-- [ ] `Projects` / `Pipeline` / `Pricing` / `About` / `Contact` / `Let's talk` each navigate to the right route, and the active link is visibly highlighted once there.
+- [ ] `Home` / `Projects` / `Pipeline` / `Pricing` / `About` / `Contact` / `Let's talk` each navigate to the right route, and the active link is visibly highlighted once there (including `Home` on `/`).
+- [ ] **On `/about`** — the shortest page — the footer sits flush at the bottom of the viewport, not floating mid-screen, and no video shows below it. Same check at a tall window (1440px+).
 - [ ] `View Projects` → `/projects`. `Contact Me` → `/contact`. Logo → `/`.
 - [ ] Browser back/forward moves between pages correctly and replays the transition.
 - [ ] Moving the mouse over a project card, pricing card, the pipeline panel, or the contact panel shows a soft blue glow following the cursor.

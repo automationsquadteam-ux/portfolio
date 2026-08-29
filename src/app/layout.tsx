@@ -91,14 +91,17 @@ export default function RootLayout({
           crossOrigin=""
         />
       </head>
-      <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
+      {/* flex column + flex-1 on <main> is the sticky-footer pattern: on short
+          pages (e.g. /about) main grows to fill the viewport so the footer sits
+          at the bottom edge instead of floating halfway up over the video. */}
+      <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
         <StructuredData />
         <BackgroundVideo />
         {/* Header, footer and the video live outside {children} so they are
             not inside template.tsx — they persist across navigations instead
             of remounting and replaying their entrance on every route change. */}
         <SiteHeader />
-        <main className="pt-16 md:pt-18">{children}</main>
+        <main className="flex-1 pt-16 md:pt-18">{children}</main>
         <SiteFooter />
       </body>
     </html>

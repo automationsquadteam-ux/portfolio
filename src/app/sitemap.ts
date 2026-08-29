@@ -28,7 +28,12 @@ const PRIORITY: Record<string, number> = {
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const routes: string[] = ["/", ...navLinks.map((link) => link.href)];
+  // "/" is listed first regardless of whether it happens to be in the nav (it
+  // is, since 2026-08-29) — the Set then drops the duplicate. That way the home
+  // page can never fall out of the sitemap by being removed from the nav.
+  const routes: string[] = Array.from(
+    new Set<string>(["/", ...navLinks.map((link) => link.href)]),
+  );
 
   return routes.map((route) => ({
     // site.url carries no trailing slash, so "/" must not append one either —
