@@ -35,11 +35,20 @@ export function Hero() {
       id="top"
       className="mx-auto flex w-full max-w-[1200px] flex-col justify-center px-6 pt-[70px] pb-8 md:px-8 lg:px-10 min-h-[calc(100svh-4rem)] md:min-h-[calc(100svh-4.5rem)]"
     >
-      {/* Deliberately capped well short of the container width and left-aligned:
-          the panel has to leave the right-hand side of the viewport clear so the
-          video's sphere and its gold glow stay visible beside the copy rather
-          than being covered by it. */}
-      <div className="glass-panel flex max-w-[680px] flex-col items-start rounded-2xl border border-line px-7 py-10 shadow-card md:px-10 md:py-12">
+      {/* Deliberately NOT the shared `glass-panel`. That utility is 85% opaque —
+          right for the text-dense pages, but on the hero it read as a solid tab
+          stamped over the artwork.
+
+          This one is 68% with a heavier blur instead: enough of the footage
+          comes through to stay part of the composition (you can see the sphere's
+          colour and motion behind the words), while the blur kills the
+          high-frequency detail that would otherwise fight the text. Measured
+          over a worst-case bright frame that still gives ~8.5:1 on the heading
+          and ~6.3:1 on body copy — see BUILD_SPEC §3.7.
+
+          Also capped well short of the container and left-aligned so the sphere
+          and its glow stay uncovered to the right. */}
+      <div className="flex max-w-[620px] flex-col items-start rounded-2xl border border-white/10 bg-background-deep/68 px-7 py-10 backdrop-blur-2xl md:px-10 md:py-12">
         <motion.span
           initial={{ opacity: 0, y: reduce ? 0 : 24 }}
           animate={{ opacity: 1, y: 0 }}

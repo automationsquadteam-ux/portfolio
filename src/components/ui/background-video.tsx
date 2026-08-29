@@ -67,15 +67,16 @@ export function BackgroundVideo() {
         tabIndex={-1}
       />
 
-      {/* Edge vignette, not a legibility scrim. Strong at the very top and
-          bottom so the fixed header and the footer have something to meet,
-          near-clear across the middle so the sphere and its gold glow read at
-          essentially full brightness. */}
+      {/* Edge vignette. Near-clear across the middle so the sphere and its gold
+          glow read at full brightness, but deliberately strong across the top
+          ~9% — that band is the full height of the fixed header, which carries
+          no background of its own, so this is what its nav text is read
+          against. Softening the 0%–9% stops is what would break it. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(5,5,6,0.72) 0%, rgba(5,5,6,0.14) 22%, rgba(5,5,6,0.10) 55%, rgba(5,5,6,0.30) 82%, rgba(5,5,6,0.75) 100%)",
+            "linear-gradient(180deg, rgba(5,5,6,0.88) 0%, rgba(5,5,6,0.80) 9%, rgba(5,5,6,0.14) 26%, rgba(5,5,6,0.10) 62%, rgba(5,5,6,0.34) 86%, rgba(5,5,6,0.62) 100%)",
         }}
       />
 

@@ -42,13 +42,19 @@ export function SiteHeader() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: EASE }}
       className={[
-        "fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-colors duration-300",
-        // Never fully transparent any more: the video behind it is bright, so a
-        // see-through header would put white nav text on a near-white ground.
-        // Both states are dark glass; scrolling just deepens it.
+        "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
+        // At rest the header has no background at all — the video runs straight
+        // through it. Its nav text is legible because the vignette in
+        // BackgroundVideo is deliberately dense across exactly this band.
+        //
+        // Once the page scrolls, page content (opaque dark panels) passes under
+        // the header, and with no background the nav would sit on top of moving
+        // card edges. The scrolled state is therefore a light frost — still
+        // clearly see-through, just enough to separate the bar from what is
+        // sliding beneath it.
         scrolled || menuOpen
-          ? "border-b border-line bg-background-deep/88"
-          : "border-b border-white/5 bg-background-deep/55",
+          ? "border-b border-line bg-background-deep/45 backdrop-blur-lg"
+          : "border-b border-transparent bg-transparent",
       ].join(" ")}
     >
       <nav

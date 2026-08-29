@@ -35,6 +35,7 @@ or the palette, because the contrast figures in §3.1 depend on both.
 | §7.20 Generated sitemap (added 2026-08-27) | ✅ Built — `/sitemap.xml` lists all six routes; stale `public/sitemap.xml` that was shadowing it deleted. `robots.ts` needed no change |
 | §7.21 Scrim depth, sticky footer, Home nav (added 2026-08-29) | ⚠️ Sticky footer + `Home` nav stand; the scrim change was **reversed** by §7.22 |
 | §7.22 Video as centrepiece: dark panels, gold accent (added 2026-08-29) | ✅ Built — video unscrimmed and boosted, all text moved onto dark glass panels, accent moved to gold/orange, poster added |
+| §7.23 Transparent header/footer, lighter hero panel (added 2026-08-29) | ✅ Built — header transparent at rest, footer a fade-out gradient, hero panel 85% → 68% frosted |
 | §6.2 Brand assets (favicons, icons, logo mark, lockup) | ✅ Generated from the master logo |
 | §6.3 Metadata, OG image, manifest, robots, sitemap, JSON-LD | ✅ Built and verified in the served output |
 | §12 Domain + Vercel deploy steps | ✅ Documented — ⬜ owner to execute |
@@ -528,9 +529,12 @@ linear-gradient(180deg,
   rgba(5,5,6,0.75) 100%)   /* under the footer */
 ```
 
-It exists so the header and footer have something to meet at the edges. **It carries no
-accessibility load** and can be tuned freely for looks — which is the opposite of the
-rule that stood here before 2026-08-29.
+Across the middle it carries no accessibility load and can be tuned freely for looks.
+
+> ⚠️ **The `0%` and `9%` stops are the exception.** Since §7.23 the header has **no
+> background of its own at rest**, so that top band is what its nav text is read against.
+> Softening those two stops makes the nav illegible over a bright frame. The bottom
+> stops (`86%`, `100%`) are likewise stacked with the footer's own gradient.
 
 **Legibility lives in `glass-panel` instead.** Defined once in `globals.css` as a Tailwind
 `@utility`:
@@ -555,10 +559,21 @@ ratios — the movement is the problem, not the luminance.
    is invisible. This is the reverse of what the same components did before 2026-08-29,
    so old class strings (`bg-linear-to-b from-white/10 to-white/4`) are actively wrong now.
 
-**Panels are deliberately not full-width.** The hero's caps at `680px` and is left
+**Panels are deliberately not full-width.** The hero's caps at `620px` and is left
 aligned so the sphere stays visible beside it; Pricing's subhead blocks are
 `inline-block`. If panels grow to fill every container the video stops being a centrepiece
 and becomes a hairline border around the page.
+
+**Opacity is per-surface, not one number.** `--panel` is 85% because the text-dense pages
+need it. The hero is the exception at **68% with `backdrop-blur-2xl`** and does *not* use
+`glass-panel` — at 85% it read as a solid tab stamped over the artwork. The extra
+transparency lets the sphere's colour and motion carry through the panel, and the heavier
+blur removes the high-frequency detail that would otherwise fight the text. Measured over
+a worst-case bright frame that is ~8.5:1 on the heading and ~6.3:1 on body copy, so it
+stays comfortably AA. **68% is close to the floor** — much below it and body copy fails.
+
+Chrome and Firefox both composite `backdrop-filter` on the GPU; the hero's is one
+element, so the heavier blur radius there is not a per-frame cost worth worrying about.
 
 **Reduced motion.** The video is a client component purely so it can honour
 `prefers-reduced-motion` — it pauses on a reduced-motion preference, leaving a still
@@ -2432,6 +2447,32 @@ What changed:
 > ffmpeg. If you change `--panel`, do the same — the frames are worth looking at, since
 > the sphere moves and the ground brightness varies across the loop.
 
+### 7.23 — Transparent header and footer, lighter hero panel (added 2026-08-29)  ✅ DONE
+
+Both changes are about letting the video run behind the page furniture instead of being
+cut off by it.
+
+- **Header is transparent at rest** — no background, no border. Its legibility now comes
+  from the vignette's top band, which was tightened to `0.88 → 0.80` across the top 9%
+  (the header's own height) to carry it. See the warning in §3.7.
+
+  It is **not** transparent once scrolled: page content is opaque dark panels, and with
+  no background at all the nav would sit directly on top of card edges sliding under it.
+  The scrolled state is a light frost (`bg-background-deep/45 backdrop-blur-lg`) — still
+  clearly see-through, just enough to separate the bar. This is the one place the change
+  was applied partially rather than literally; say so if the fully-transparent scrolled
+  state is wanted anyway.
+
+- **Footer is transparent**, using a vertical gradient
+  (`from-background-deep/45 via-/75 to-/92`) rather than a flat alpha, so its top edge is
+  genuinely see-through and it densifies into the bottom of the page instead of sitting on
+  it as a bar. Stacked with the vignette's `86%`/`100%` stops. Footer text moved
+  `text-subtle` → `text-muted`, because 60%-white at 13px does not survive a transparent
+  footer over a bright frame.
+
+- **Hero panel dropped 85% → 68%** with `backdrop-blur-2xl`, a lighter border and no
+  shadow, and narrowed `680px → 620px`. Rationale and the measured contrast are in §3.7.
+
 ---
 
 ## 8. MOTION SPEC
@@ -2585,7 +2626,9 @@ These need a real browser. Nothing below has been verified.
 - [ ] Card badges read `CHAR MEEM / 01`, `ANCHOR / 02`, `LUMBER WIZ / 03` top-to-bottom.
 
 **Interaction**
-- [ ] Header is dark glass **even at the top of the page** (never see-through) and deepens after ~24px of scroll.
+- [ ] Header is **fully transparent at the top of the page** (video runs straight through it) and picks up a light frost after ~24px of scroll. Nav text stays readable in both states.
+- [ ] Footer is see-through at its top edge and densifies toward the bottom — no hard bar. Its links and email are readable over the brightest part of the loop.
+- [ ] The hero panel is visibly frosted, not solid: the sphere's colour and motion are perceptible *through* it, while the headline stays crisp.
 - [ ] Below `lg`: header shows the wordmark + hamburger (plus `Let's talk` from `md` up). Tapping it opens a dropdown with all six links stacked and a full-width `Let's talk` at the bottom; the icon swaps to `X`; tapping a link or the `X` closes it.
 - [ ] **The background video plays, is muted, loops seamlessly, and covers the viewport without distortion at every width.** It keeps playing *uninterrupted* while navigating between pages — it must not restart or flash.
 - [ ] **The video is genuinely vivid** — the sphere and its gold glow read clearly, and the page does not look like grey wallpaper. This is the whole point of §7.22; if it looks dull, the vignette or a panel has crept back up in opacity.
