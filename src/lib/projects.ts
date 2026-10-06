@@ -42,7 +42,7 @@ export const projects: Project[] = [
     description:
       "A modern business website built for an anchor manufacturing company with a clean UI, responsive design, and optimized performance.",
     tags: ["Next.js", "TypeScript", "Supabase"],
-    href: "https://anchor-builders.vercel.app/",
+    href: "https://www.anchorassociatesandbuilders.com",
     image: "/projects/anchor.png",
     imageAlt: "Anchor Builders homepage showing a full-bleed project photograph",
   },
